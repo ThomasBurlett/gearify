@@ -17,7 +17,9 @@ export function PackListCard({ status, gear }: PackListCardProps) {
       <CardHeader>
         <Badge variant="warm">Pack list</Badge>
         <CardTitle className="text-2xl">Items to bring</CardTitle>
-        <CardDescription>Extra gear that is helpful for variable conditions and travel.</CardDescription>
+        <CardDescription>
+          Extra gear that is helpful for variable conditions and travel.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {status === 'loading' ? (

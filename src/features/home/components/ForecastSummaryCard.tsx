@@ -106,9 +106,7 @@ export function ForecastSummaryCard({
                 </p>
               </div>
               <div className="rounded-2xl border border-ink-200/10 bg-ink-950/40 p-4">
-                <p className="text-xs uppercase tracking-[0.25em] text-ink-100/60">
-                  Precipitation
-                </p>
+                <p className="text-xs uppercase tracking-[0.25em] text-ink-100/60">Precipitation</p>
                 <p className="mt-2 text-lg text-ink-50">
                   {Math.round(selectedHour.precipitationChance)}% chance
                 </p>
@@ -132,9 +130,7 @@ export function ForecastSummaryCard({
               </div>
               <div className="rounded-2xl border border-ink-200/10 bg-ink-950/40 p-4">
                 <p className="text-xs uppercase tracking-[0.25em] text-ink-100/60">Pressure</p>
-                <p className="mt-2 text-lg text-ink-50">
-                  {Math.round(selectedHour.pressure)} hPa
-                </p>
+                <p className="mt-2 text-lg text-ink-50">{Math.round(selectedHour.pressure)} hPa</p>
                 <p className="text-sm text-ink-100/70">
                   {heatIndex ? `Heat index ${heatIndex}F` : 'Heat index n/a'}
                 </p>

@@ -16,9 +16,7 @@ export function HomeHeader({ onShare }: HomeHeaderProps) {
         </div>
         <div>
           <p className="font-display text-xl font-semibold tracking-tight text-ink-50">Gearify</p>
-          <p className="text-xs uppercase tracking-[0.3em] text-ink-100/80">
-            Wear-ready forecasts
-          </p>
+          <p className="text-xs uppercase tracking-[0.3em] text-ink-100/80">Wear-ready forecasts</p>
         </div>
       </div>
       <div className="flex items-center gap-3">

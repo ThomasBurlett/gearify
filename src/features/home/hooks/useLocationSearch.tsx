@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import type { LocationResult } from '@/lib/weather'
-import { fetchGeocoding, formatLocationName } from '@/lib/weather'
+import { fetchGeocoding } from '@/lib/weather'
 
 type UseLocationSearchArgs = {
   location: LocationResult | null

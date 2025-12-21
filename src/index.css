@@ -75,7 +75,6 @@ html::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, rgba(46, 143, 112, 0.95), rgba(255, 193, 122, 0.95));
 }
 
-
 .loading-ellipsis {
   display: inline-flex;
   gap: 2px;
