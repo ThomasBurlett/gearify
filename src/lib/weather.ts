@@ -1,0 +1,255 @@
+export type SportType = 'running' | 'skiing'
+
+export type LocationResult = {
+  name: string
+  latitude: number
+  longitude: number
+  elevation?: number
+  admin1?: string
+  country?: string
+  timezone?: string
+}
+
+export type WeatherSeries = {
+  time: string[]
+  temperature_2m: number[]
+  apparent_temperature: number[]
+  relative_humidity_2m: number[]
+  dew_point_2m: number[]
+  precipitation_probability: number[]
+  precipitation: number[]
+  pressure_msl: number[]
+  cloud_cover: number[]
+  visibility: number[]
+  wind_speed_10m: number[]
+  wind_gusts_10m: number[]
+  weather_code: number[]
+}
+
+export type WeatherData = {
+  timezone: string
+  elevation: number
+  hourly: WeatherSeries
+  current: {
+    time: string
+    temperature_2m: number
+    apparent_temperature: number
+    weather_code: number
+  }
+}
+
+type GeocodeResponse = {
+  results?: Array<{
+    name: string
+    latitude: number
+    longitude: number
+    elevation?: number
+    admin1?: string
+    country?: string
+    timezone?: string
+  }>
+}
+
+const WEATHER_CODE_LABELS: Record<number, string> = {
+  0: 'Clear',
+  1: 'Mainly clear',
+  2: 'Partly cloudy',
+  3: 'Overcast',
+  45: 'Fog',
+  48: 'Depositing rime fog',
+  51: 'Light drizzle',
+  53: 'Drizzle',
+  55: 'Dense drizzle',
+  61: 'Light rain',
+  63: 'Rain',
+  65: 'Heavy rain',
+  66: 'Freezing rain',
+  67: 'Heavy freezing rain',
+  71: 'Light snow',
+  73: 'Snow',
+  75: 'Heavy snow',
+  77: 'Snow grains',
+  80: 'Rain showers',
+  81: 'Heavy rain showers',
+  82: 'Violent rain showers',
+  85: 'Snow showers',
+  86: 'Heavy snow showers',
+  95: 'Thunderstorm',
+  96: 'Thunderstorm with hail',
+  99: 'Thunderstorm with hail',
+}
+
+export function getWeatherLabel(code: number) {
+  return WEATHER_CODE_LABELS[code] ?? 'Unknown'
+}
+
+export function formatLocationName(location: LocationResult) {
+  const region = location.admin1 ?? location.country ?? ''
+  return region ? `${location.name}, ${region}` : location.name
+}
+
+export async function fetchGeocoding(query: string) {
+  const url = new URL('https://geocoding-api.open-meteo.com/v1/search')
+  url.searchParams.set('name', query)
+  url.searchParams.set('count', '6')
+  url.searchParams.set('language', 'en')
+  url.searchParams.set('format', 'json')
+
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error('Unable to search locations')
+  }
+  const data = (await response.json()) as GeocodeResponse
+  return (data.results ?? []).map((result) => ({
+    name: result.name,
+    latitude: result.latitude,
+    longitude: result.longitude,
+    elevation: result.elevation,
+    admin1: result.admin1,
+    country: result.country,
+    timezone: result.timezone,
+  }))
+}
+
+export async function fetchReverseGeocoding(latitude: number, longitude: number) {
+  const url = new URL('https://geocoding-api.open-meteo.com/v1/reverse')
+  url.searchParams.set('latitude', latitude.toString())
+  url.searchParams.set('longitude', longitude.toString())
+  url.searchParams.set('count', '1')
+  url.searchParams.set('language', 'en')
+  url.searchParams.set('format', 'json')
+
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error('Unable to resolve current location')
+  }
+  const data = (await response.json()) as GeocodeResponse
+  const result = data.results?.[0]
+  if (!result) {
+    throw new Error('No nearby location found')
+  }
+  return {
+    name: result.name,
+    latitude: result.latitude,
+    longitude: result.longitude,
+    elevation: result.elevation,
+    admin1: result.admin1,
+    country: result.country,
+    timezone: result.timezone,
+  }
+}
+
+export async function fetchIpLocation() {
+  const response = await fetch('https://ipapi.co/json/')
+  if (!response.ok) {
+    throw new Error('Unable to resolve IP location')
+  }
+  const data = (await response.json()) as {
+    city?: string
+    region?: string
+    country_name?: string
+    latitude?: number
+    longitude?: number
+  }
+  if (
+    data.latitude === undefined ||
+    data.longitude === undefined ||
+    Number.isNaN(Number(data.latitude)) ||
+    Number.isNaN(Number(data.longitude))
+  ) {
+    throw new Error('Invalid IP location response')
+  }
+  return {
+    name: data.city ?? 'IP location',
+    admin1: data.region,
+    country: data.country_name,
+    latitude: Number(data.latitude),
+    longitude: Number(data.longitude),
+  }
+}
+
+export async function fetchForecast(latitude: number, longitude: number) {
+  const url = new URL('https://api.open-meteo.com/v1/forecast')
+  url.searchParams.set('latitude', latitude.toString())
+  url.searchParams.set('longitude', longitude.toString())
+  url.searchParams.set(
+    'hourly',
+    [
+      'temperature_2m',
+      'apparent_temperature',
+      'relative_humidity_2m',
+      'dew_point_2m',
+      'precipitation_probability',
+      'precipitation',
+      'pressure_msl',
+      'cloud_cover',
+      'visibility',
+      'wind_speed_10m',
+      'wind_gusts_10m',
+      'weather_code',
+    ].join(',')
+  )
+  url.searchParams.set('current', 'temperature_2m,apparent_temperature,weather_code')
+  url.searchParams.set('temperature_unit', 'fahrenheit')
+  url.searchParams.set('wind_speed_unit', 'mph')
+  url.searchParams.set('precipitation_unit', 'inch')
+  url.searchParams.set('timezone', 'auto')
+
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error('Unable to load forecast data')
+  }
+
+  return (await response.json()) as WeatherData
+}
+
+export function findHourIndex(hourly: WeatherSeries, targetTime: string) {
+  return hourly.time.findIndex((time) => time === targetTime)
+}
+
+export function findClosestHourIndex(hourly: WeatherSeries, targetTime: string) {
+  const exact = findHourIndex(hourly, targetTime)
+  if (exact !== -1) return exact
+  const target = new Date(targetTime).getTime()
+  let closest = -1
+  let smallest = Number.POSITIVE_INFINITY
+  hourly.time.forEach((time, index) => {
+    const diff = Math.abs(new Date(time).getTime() - target)
+    if (diff < smallest) {
+      smallest = diff
+      closest = index
+    }
+  })
+  return closest
+}
+
+export function computeHeatIndex(tempF: number, humidity: number) {
+  if (tempF < 80 || humidity < 40) {
+    return null
+  }
+  const t = tempF
+  const r = humidity
+  const index =
+    -42.379 +
+    2.04901523 * t +
+    10.14333127 * r -
+    0.22475541 * t * r -
+    0.00683783 * t * t -
+    0.05481717 * r * r +
+    0.00122874 * t * t * r +
+    0.00085282 * t * r * r -
+    0.00000199 * t * t * r * r
+  return Math.round(index)
+}
+
+export function computeWindChill(tempF: number, windMph: number) {
+  if (tempF > 50 || windMph <= 3) {
+    return null
+  }
+  const chill =
+    35.74 +
+    0.6215 * tempF -
+    35.75 * Math.pow(windMph, 0.16) +
+    0.4275 * tempF * Math.pow(windMph, 0.16)
+  return Math.round(chill)
+}
