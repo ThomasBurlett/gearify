@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import type React from 'react'
-import { CalendarClock, MapPin, Navigation, Loader2, Snowflake, SunMedium } from 'lucide-react'
+import { CalendarClock, MapPin, Navigation, Loader2, Snowflake, SunMedium, X } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -21,7 +21,6 @@ type ForecastSetupCardProps = {
   onSearchQueryChange: (value: string) => void
   onSearchFocus: () => void
   onSearchKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void
-  onSearchSubmit: (event: React.FormEvent<HTMLFormElement>) => void
   searchResults: LocationResult[]
   searchStatus: 'idle' | 'loading' | 'error'
   searchError: string
@@ -48,12 +47,13 @@ const SPORT_LABELS: Record<SportType, string> = {
   skiing: 'Skiing',
 }
 
+const elevationFormatter = new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 })
+
 export function ForecastSetupCard({
   searchQuery,
   onSearchQueryChange,
   onSearchFocus,
   onSearchKeyDown,
-  onSearchSubmit,
   searchResults,
   searchStatus,
   searchError,
@@ -94,7 +94,7 @@ export function ForecastSetupCard({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <form onSubmit={onSearchSubmit} className="space-y-3">
+        <div className="space-y-3">
           <Label htmlFor="location-search">Location search</Label>
           <div className="flex flex-wrap gap-3">
             <Popover open={isSearchOpen} onOpenChange={handleOpenChange} modal={false}>
@@ -108,9 +108,23 @@ export function ForecastSetupCard({
                     onFocus={onSearchFocus}
                     onChange={(event) => onSearchQueryChange(event.target.value)}
                     onKeyDown={onSearchKeyDown}
-                    placeholder="Try Eldora, Mt. Hood, Aspen, Big Cottonwood..."
-                    className="pl-10"
+                    placeholder='Try "Sandy, UT", "84070", "Alta"...'
+                    className="pl-10 pr-10"
                   />
+                  {searchQuery.trim() ? (
+                    <button
+                      type="button"
+                      aria-label="Clear location search"
+                      onClick={() => {
+                        onSearchQueryChange('')
+                        onSearchOpenChange(false)
+                        inputRef.current?.focus()
+                      }}
+                      className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center text-ink-100/70 transition hover:text-ink-50"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  ) : null}
                 </div>
               </PopoverAnchor>
               {isSearchOpen && (
@@ -121,7 +135,7 @@ export function ForecastSetupCard({
                   onCloseAutoFocus={(event) => event.preventDefault()}
                 >
                   <Command shouldFilter={false}>
-                    <CommandList className="scrollbar-glow">
+                    <CommandList className="scrollbar-glow pr-1">
                       {searchStatus === 'loading' && (
                         <div className="px-4 py-3 text-sm text-ink-100/70">Searching...</div>
                       )}
@@ -140,11 +154,11 @@ export function ForecastSetupCard({
                           className="hover:border-tide-300/50 hover:bg-ink-950/60"
                         >
                           <span className="pr-4">{formatLocationName(result)}</span>
-                          <span className="whitespace-nowrap text-xs text-ink-100/60">
-                            {result.elevation
-                              ? `${Math.round(result.elevation * 3.28084)} ft`
-                              : 'Elevation n/a'}
-                          </span>
+                          {result.elevation !== undefined && (
+                            <span className="whitespace-nowrap text-xs text-ink-100/60">
+                              {elevationFormatter.format(Math.round(result.elevation * 3.28084))} ft
+                            </span>
+                          )}
                         </CommandItem>
                       ))}
                       {searchResults.length > 0 && (
@@ -164,11 +178,12 @@ export function ForecastSetupCard({
                             }
                           >
                             <span className="pr-4">{formatLocationName(result)}</span>
-                            <span className="whitespace-nowrap text-xs text-ink-100/60">
-                              {result.elevation
-                                ? `${Math.round(result.elevation * 3.28084)} ft`
-                                : 'Elevation n/a'}
-                            </span>
+                            {result.elevation !== undefined && (
+                              <span className="whitespace-nowrap text-xs text-ink-100/60">
+                                {elevationFormatter.format(Math.round(result.elevation * 3.28084))}{' '}
+                                ft
+                              </span>
+                            )}
                           </CommandItem>
                         ))}
                       {searchStatus === 'idle' &&
@@ -184,7 +199,6 @@ export function ForecastSetupCard({
                 </PopoverContent>
               )}
             </Popover>
-            <Button type="submit">Search</Button>
             <Button
               type="button"
               variant="outline"
@@ -200,7 +214,7 @@ export function ForecastSetupCard({
               {geoMessage}
             </p>
           )}
-        </form>
+        </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-3">

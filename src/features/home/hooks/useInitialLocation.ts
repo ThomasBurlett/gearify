@@ -22,8 +22,10 @@ export function useInitialLocation({
     const lat = searchParams.get('lat')
     const lon = searchParams.get('lon')
     const name = searchParams.get('name')
+    const elev = searchParams.get('elev')
     const parsedLat = lat ? Number(lat) : null
     const parsedLon = lon ? Number(lon) : null
+    const parsedElevation = elev ? Number(elev) : null
 
     if (
       parsedLat !== null &&
@@ -31,11 +33,15 @@ export function useInitialLocation({
       Number.isFinite(parsedLat) &&
       Number.isFinite(parsedLon)
     ) {
-      setLocation({
+      const nextLocation = {
         name: name ?? 'Selected location',
         latitude: parsedLat,
         longitude: parsedLon,
-      })
+      }
+      if (parsedElevation !== null && Number.isFinite(parsedElevation)) {
+        nextLocation.elevation = parsedElevation
+      }
+      setLocation(nextLocation)
       return
     }
 

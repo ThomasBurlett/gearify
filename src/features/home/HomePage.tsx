@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import { getGearSuggestions } from '@/lib/gear'
@@ -66,6 +66,7 @@ export default function HomePage() {
     setGeoMessage,
   } = useHomeStore()
   const [isLocating, setIsLocating] = useState(false)
+  const lastUrlTime = useRef<string | null | undefined>(undefined)
 
   useInitialLocation({
     searchParams,
@@ -100,9 +101,15 @@ export default function HomePage() {
 
   useEffect(() => {
     const fromUrl = searchParams.get('time')
+    if (fromUrl === lastUrlTime.current) {
+      return
+    }
+    lastUrlTime.current = fromUrl
     if (fromUrl) {
       setSelectedTime(fromUrl)
-    } else if (!selectedTime) {
+      return
+    }
+    if (!selectedTime) {
       setSelectedTime(toLocalHourInput(new Date()))
     }
   }, [searchParams, selectedTime, setSelectedTime])
@@ -118,6 +125,9 @@ export default function HomePage() {
     params.set('lat', location.latitude.toFixed(5))
     params.set('lon', location.longitude.toFixed(5))
     params.set('name', formatLocationName(location))
+    if (location.elevation !== undefined) {
+      params.set('elev', location.elevation.toFixed(0))
+    }
     params.set('time', selectedTime)
     navigate({ pathname: `/${sport}`, search: params.toString() }, { replace: true })
   }, [location, selectedTime, sport, navigate])
@@ -161,13 +171,6 @@ export default function HomePage() {
         conditionLabel,
       })
     : null
-
-  const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (searchResults.length > 0) {
-      handleLocationSelect(searchResults[Math.max(0, selectedResultIndex)])
-    }
-  }
 
   const handleLocationSelect = (result: LocationResult) => {
     searchDirty.current = false
@@ -284,7 +287,6 @@ export default function HomePage() {
                 handleLocationSelect(searchResults[selectedResultIndex])
               }
             }}
-            onSearchSubmit={handleSearch}
             searchResults={searchResults}
             searchStatus={searchStatus}
             searchError={searchError}
@@ -318,6 +320,7 @@ export default function HomePage() {
             heatIndex={heatIndex}
             windChill={windChill}
             visibilityMiles={visibilityMiles}
+            elevation={location?.elevation ?? null}
             errorMessage={errorMessage}
           />
         </section>

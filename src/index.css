@@ -54,11 +54,21 @@ html::-webkit-scrollbar {
   width: 8px;
 }
 
+.scrollbar-glow::-webkit-scrollbar-button,
+body::-webkit-scrollbar-button,
+html::-webkit-scrollbar-button {
+  display: none;
+}
+
 .scrollbar-glow::-webkit-scrollbar-track,
 body::-webkit-scrollbar-track,
 html::-webkit-scrollbar-track {
   background: rgba(14, 23, 24, 0.8);
   border-radius: 999px;
+}
+
+.scrollbar-glow::-webkit-scrollbar-track {
+  margin: 2px 0;
 }
 
 .scrollbar-glow::-webkit-scrollbar-thumb,

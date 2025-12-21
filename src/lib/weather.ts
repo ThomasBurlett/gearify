@@ -67,6 +67,13 @@ type NominatimResponse = {
   }
 }
 
+type NominatimSearchResult = {
+  display_name?: string
+  lat?: string
+  lon?: string
+  address?: NominatimResponse['address']
+}
+
 const WEATHER_CODE_LABELS: Record<number, string> = {
   0: 'Clear',
   1: 'Mainly clear',
@@ -105,7 +112,13 @@ export function formatLocationName(location: LocationResult) {
   return region ? `${location.name}, ${region}` : location.name
 }
 
-export async function fetchGeocoding(query: string) {
+const AREA_CODE_PATTERN = /^\d{3,6}$/
+
+function isAreaCodeQuery(query: string) {
+  return AREA_CODE_PATTERN.test(query.trim())
+}
+
+async function fetchOpenMeteoGeocoding(query: string) {
   const url = new URL('https://geocoding-api.open-meteo.com/v1/search')
   url.searchParams.set('name', query)
   url.searchParams.set('count', '6')
@@ -126,6 +139,112 @@ export async function fetchGeocoding(query: string) {
     country: result.country,
     timezone: result.timezone,
   }))
+}
+
+async function fetchAreaCodeGeocoding(query: string) {
+  const url = new URL('https://nominatim.openstreetmap.org/search')
+  url.searchParams.set('format', 'jsonv2')
+  url.searchParams.set('postalcode', query)
+  url.searchParams.set('addressdetails', '1')
+  url.searchParams.set('limit', '6')
+
+  const response = await fetch(url, {
+    headers: {
+      Accept: 'application/json',
+    },
+  })
+  if (!response.ok) {
+    throw new Error('Unable to search locations')
+  }
+  const data = (await response.json()) as NominatimSearchResult[]
+  return data
+    .map((result) => {
+      const name = pickNominatimName(result.address) ?? result.display_name
+      const admin1 = result.address?.state ?? result.address?.region
+      const country = result.address?.country
+      const latitude = result.lat ? Number(result.lat) : NaN
+      const longitude = result.lon ? Number(result.lon) : NaN
+      if (!name || Number.isNaN(latitude) || Number.isNaN(longitude)) {
+        return null
+      }
+      return {
+        name,
+        latitude,
+        longitude,
+        admin1,
+        country,
+      }
+    })
+    .filter((result): result is LocationResult => Boolean(result))
+}
+
+async function fetchNominatimGeocoding(query: string) {
+  const url = new URL('https://nominatim.openstreetmap.org/search')
+  url.searchParams.set('format', 'jsonv2')
+  url.searchParams.set('q', query)
+  url.searchParams.set('addressdetails', '1')
+  url.searchParams.set('limit', '6')
+
+  const response = await fetch(url, {
+    headers: {
+      Accept: 'application/json',
+    },
+  })
+  if (!response.ok) {
+    throw new Error('Unable to search locations')
+  }
+  const data = (await response.json()) as NominatimSearchResult[]
+  return data
+    .map((result) => {
+      const name = pickNominatimName(result.address) ?? result.display_name
+      const admin1 = result.address?.state ?? result.address?.region
+      const country = result.address?.country
+      const latitude = result.lat ? Number(result.lat) : NaN
+      const longitude = result.lon ? Number(result.lon) : NaN
+      if (!name || Number.isNaN(latitude) || Number.isNaN(longitude)) {
+        return null
+      }
+      return {
+        name,
+        latitude,
+        longitude,
+        admin1,
+        country,
+      }
+    })
+    .filter((result): result is LocationResult => Boolean(result))
+}
+
+export async function fetchGeocoding(query: string) {
+  if (isAreaCodeQuery(query)) {
+    try {
+      return await fetchAreaCodeGeocoding(query)
+    } catch {
+      return []
+    }
+  }
+
+  const [openMeteoResult, nominatimResult] = await Promise.allSettled([
+    fetchOpenMeteoGeocoding(query),
+    fetchNominatimGeocoding(query),
+  ])
+
+  const openMeteoResults = openMeteoResult.status === 'fulfilled' ? openMeteoResult.value : []
+  const nominatimResults = nominatimResult.status === 'fulfilled' ? nominatimResult.value : []
+
+  const seen = new Set<string>()
+  const merged: LocationResult[] = []
+  const pushUnique = (result: LocationResult) => {
+    const key = `${result.latitude.toFixed(5)},${result.longitude.toFixed(5)}:${result.name}`
+    if (seen.has(key)) return
+    seen.add(key)
+    merged.push(result)
+  }
+
+  openMeteoResults.forEach(pushUnique)
+  nominatimResults.forEach(pushUnique)
+
+  return merged
 }
 
 export async function fetchReverseGeocoding(latitude: number, longitude: number) {
