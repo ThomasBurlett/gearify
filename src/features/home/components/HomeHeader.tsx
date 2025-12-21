@@ -1,5 +1,6 @@
 import { ArrowUpRight, Check, Compass, Info, Link2, Sparkles } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import confetti from 'canvas-confetti'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -26,10 +27,25 @@ type HomeHeaderProps = {
 
 export function HomeHeader({ onShare }: HomeHeaderProps) {
   const [toastOpen, setToastOpen] = useState(false)
+  const shareButtonRef = useRef<HTMLButtonElement | null>(null)
 
   const handleShareClick = async () => {
     const didCopy = await onShare()
     if (didCopy) {
+      const rect = shareButtonRef.current?.getBoundingClientRect()
+      const origin = rect
+        ? {
+            x: (rect.left + rect.width / 2) / window.innerWidth,
+            y: (rect.top + rect.height / 2) / window.innerHeight,
+          }
+        : { x: 0.5, y: 0.2 }
+      confetti({
+        particleCount: 120,
+        spread: 70,
+        startVelocity: 30,
+        origin,
+        colors: ['#5aa48f', '#3ea884', '#8fc1a7', '#f6c77c', '#ffa348', '#3a5e8d'],
+      })
       setToastOpen(true)
     }
   }
@@ -109,7 +125,12 @@ export function HomeHeader({ onShare }: HomeHeaderProps) {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="glow" size="sm" onClick={handleShareClick}>
+              <Button
+                variant="glow"
+                size="sm"
+                onClick={handleShareClick}
+                ref={shareButtonRef}
+              >
                 Share link
                 <ArrowUpRight />
               </Button>
