@@ -230,17 +230,28 @@ export function ForecastSetupCard({
 
           <div className="space-y-3">
             <Label htmlFor="forecast-time">Date + time</Label>
-            <div className="relative">
-              <CalendarClock className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-ink-100/60" />
-              <Input
-                id="forecast-time"
-                type="datetime-local"
-                step={3600}
-                value={selectedTime}
-                onChange={(event) => onTimeChange(event.target.value)}
-                className="pl-10"
-              />
-            </div>
+          <div className="relative">
+            <Input
+              id="forecast-time"
+              type="datetime-local"
+              step={3600}
+              value={selectedTime}
+              onChange={(event) => onTimeChange(event.target.value)}
+              className="pr-12"
+            />
+            <button
+              type="button"
+              aria-label="Open date and time picker"
+              onClick={() => {
+                const input = document.getElementById('forecast-time') as HTMLInputElement | null
+                input?.showPicker?.()
+                input?.focus()
+              }}
+              className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full border border-ink-200/20 bg-ink-950/50 text-ink-50 transition hover:border-tide-300/60 hover:bg-ink-900/70"
+            >
+              <CalendarClock className="h-4 w-4 text-ink-50" />
+            </button>
+          </div>
             <div className="flex flex-wrap gap-2">
               {presetHours.map((preset) => (
                 <button
