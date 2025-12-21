@@ -50,6 +50,23 @@ type GeocodeResponse = {
   }>
 }
 
+type NominatimResponse = {
+  display_name?: string
+  lat?: string
+  lon?: string
+  address?: {
+    city?: string
+    town?: string
+    village?: string
+    hamlet?: string
+    municipality?: string
+    county?: string
+    state?: string
+    region?: string
+    country?: string
+  }
+}
+
 const WEATHER_CODE_LABELS: Record<number, string> = {
   0: 'Clear',
   1: 'Mainly clear',
@@ -136,6 +153,60 @@ export async function fetchReverseGeocoding(latitude: number, longitude: number)
     admin1: result.admin1,
     country: result.country,
     timezone: result.timezone,
+  }
+}
+
+function pickNominatimName(address?: NominatimResponse['address']) {
+  if (!address) return null
+  return (
+    address.city ??
+    address.town ??
+    address.village ??
+    address.hamlet ??
+    address.municipality ??
+    address.county ??
+    null
+  )
+}
+
+export async function fetchReverseGeocodingWithFallback(
+  latitude: number,
+  longitude: number
+): Promise<LocationResult> {
+  try {
+    return await fetchReverseGeocoding(latitude, longitude)
+  } catch {
+    const url = new URL('https://nominatim.openstreetmap.org/reverse')
+    url.searchParams.set('format', 'jsonv2')
+    url.searchParams.set('lat', latitude.toString())
+    url.searchParams.set('lon', longitude.toString())
+    url.searchParams.set('zoom', '10')
+    url.searchParams.set('addressdetails', '1')
+
+    const response = await fetch(url, {
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+    if (!response.ok) {
+      throw new Error('Unable to resolve current location')
+    }
+    const data = (await response.json()) as NominatimResponse
+    const name = pickNominatimName(data.address) ?? data.display_name
+    const admin1 = data.address?.state ?? data.address?.region
+    const country = data.address?.country
+    const parsedLat = data.lat ? Number(data.lat) : latitude
+    const parsedLon = data.lon ? Number(data.lon) : longitude
+    if (!name || Number.isNaN(parsedLat) || Number.isNaN(parsedLon)) {
+      throw new Error('No nearby location found')
+    }
+    return {
+      name,
+      latitude: parsedLat,
+      longitude: parsedLon,
+      admin1,
+      country,
+    }
   }
 }
 

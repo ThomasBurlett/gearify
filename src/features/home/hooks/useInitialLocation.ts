@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
+import { getCurrentPositionWithFallback, getGeolocationDetails } from '@/lib/geolocation'
 import type { LocationResult } from '@/lib/weather'
-import { fetchIpLocation, fetchReverseGeocoding } from '@/lib/weather'
+import { fetchIpLocation, fetchReverseGeocodingWithFallback } from '@/lib/weather'
 
 type UseInitialLocationArgs = {
   searchParams: URLSearchParams
@@ -41,43 +42,48 @@ export function useInitialLocation({
     if (requestedGeo.current) return
     requestedGeo.current = true
 
-    if (!navigator.geolocation) {
-      setLocation(defaultLocation)
-      setGeoMessage('Geolocation is not supported in this browser.')
-      return
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
+    const resolveLocation = async () => {
+      try {
+        const position = await getCurrentPositionWithFallback()
         try {
-          const resolved = await fetchReverseGeocoding(
+          const resolved = await fetchReverseGeocodingWithFallback(
             position.coords.latitude,
             position.coords.longitude
           )
           setLocation(resolved)
           setGeoMessage('')
+          return
         } catch {
-          setLocation(defaultLocation)
-          setGeoMessage('Unable to resolve your location. Using fallback.')
+          setLocation({
+            name: 'Current location',
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          })
+          setGeoMessage('Using device coordinates. Nearby place name unavailable.')
+          return
         }
-      },
-      async (error) => {
+      } catch (error) {
+        const { code, message } = getGeolocationDetails(error)
         try {
           const ipLocation = await fetchIpLocation()
           setLocation(ipLocation)
-          setGeoMessage('Location could not be determined, estimating location.')
+          const codeLabel = code === null ? '' : ` (${code})`
+          setGeoMessage(`Location error${codeLabel}: ${message}. Estimating location.`)
           return
         } catch {
           // Ignore IP fallback errors.
         }
 
         setLocation(defaultLocation)
-        const contextHint = window.isSecureContext ? '' : ' (Not a secure context)'
-        setGeoMessage(
-          `Location error (${error.code}): ${error.message || 'Unknown error'}${contextHint}`
-        )
-      },
-      { enableHighAccuracy: false, timeout: 5000, maximumAge: 300000 }
-    )
+        const codeLabel = code === null ? '' : ` (${code})`
+        const contextHint =
+          typeof window !== 'undefined' && window.isSecureContext
+            ? ''
+            : ' (Not a secure context)'
+        setGeoMessage(`Location error${codeLabel}: ${message}${contextHint}`)
+      }
+    }
+
+    void resolveLocation()
   }, [searchParams, defaultLocation, setGeoMessage, setLocation])
 }

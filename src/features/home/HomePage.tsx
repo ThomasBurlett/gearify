@@ -3,11 +3,12 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import { getGearSuggestions } from '@/lib/gear'
 import { toLocalHourInput, setHourForDate } from '@/lib/time'
+import { getCurrentPositionWithFallback, getGeolocationDetails } from '@/lib/geolocation'
 import {
   computeHeatIndex,
   computeWindChill,
   fetchIpLocation,
-  fetchReverseGeocoding,
+  fetchReverseGeocodingWithFallback,
   findClosestHourIndex,
   formatLocationName,
   getWeatherLabel,
@@ -177,70 +178,71 @@ export default function HomePage() {
     pushRecentLocation(result)
   }
 
-  const handleUseCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      searchDirty.current = false
-      setLocation(DEFAULT_LOCATION)
-      setSelectedTime(toLocalHourInput(new Date()))
-      setGeoMessage('Geolocation is not supported in this browser.')
-      return
-    }
+  const handleUseCurrentLocation = async () => {
     setStatus('loading')
     setForecast(null)
     setIsLocating(true)
     setGeoMessage('Requesting current location...')
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const resolved = await fetchReverseGeocoding(
-            position.coords.latitude,
-            position.coords.longitude
-          )
-          searchDirty.current = false
-          setLocation(resolved)
-          setSelectedTime(toLocalHourInput(new Date()))
-          resetSearchState()
-          setStatus('idle')
-          setIsLocating(false)
-          setGeoMessage('')
-          pushRecentLocation(resolved)
-        } catch {
-          searchDirty.current = false
-          setLocation(DEFAULT_LOCATION)
-          setSelectedTime(toLocalHourInput(new Date()))
-          setStatus('idle')
-          setIsLocating(false)
-          setGeoMessage('Unable to resolve your location. Using fallback.')
-        }
-      },
-      async (error) => {
-        try {
-          const ipLocation = await fetchIpLocation()
-          searchDirty.current = false
-          setLocation(ipLocation)
-          setSelectedTime(toLocalHourInput(new Date()))
-          resetSearchState()
-          setStatus('idle')
-          setIsLocating(false)
-          setGeoMessage('Location could not be determined, estimating location.')
-          pushRecentLocation(ipLocation)
-          return
-        } catch {
-          // Ignore IP fallback errors.
-        }
-
+    try {
+      const position = await getCurrentPositionWithFallback()
+      try {
+        const resolved = await fetchReverseGeocodingWithFallback(
+          position.coords.latitude,
+          position.coords.longitude
+        )
         searchDirty.current = false
-        setLocation(DEFAULT_LOCATION)
+        setLocation(resolved)
         setSelectedTime(toLocalHourInput(new Date()))
+        resetSearchState()
         setStatus('idle')
         setIsLocating(false)
-        const contextHint = window.isSecureContext ? '' : ' (Not a secure context)'
-        setGeoMessage(
-          `Location error (${error.code}): ${error.message || 'Unknown error'}${contextHint}`
-        )
-      },
-      { enableHighAccuracy: false, timeout: 5000, maximumAge: 300000 }
-    )
+        setGeoMessage('')
+        pushRecentLocation(resolved)
+        return
+      } catch {
+        const fallbackLocation: LocationResult = {
+          name: 'Current location',
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        }
+        searchDirty.current = false
+        setLocation(fallbackLocation)
+        setSelectedTime(toLocalHourInput(new Date()))
+        resetSearchState()
+        setStatus('idle')
+        setIsLocating(false)
+        setGeoMessage('Using device coordinates. Nearby place name unavailable.')
+        pushRecentLocation(fallbackLocation)
+        return
+      }
+    } catch (error) {
+      const { code, message } = getGeolocationDetails(error)
+      try {
+        const ipLocation = await fetchIpLocation()
+        searchDirty.current = false
+        setLocation(ipLocation)
+        setSelectedTime(toLocalHourInput(new Date()))
+        resetSearchState()
+        setStatus('idle')
+        setIsLocating(false)
+        const codeLabel = code === null ? '' : ` (${code})`
+        setGeoMessage(`Location error${codeLabel}: ${message}. Estimating location.`)
+        pushRecentLocation(ipLocation)
+        return
+      } catch {
+        // Ignore IP fallback errors.
+      }
+
+      searchDirty.current = false
+      setLocation(DEFAULT_LOCATION)
+      setSelectedTime(toLocalHourInput(new Date()))
+      setStatus('idle')
+      setIsLocating(false)
+      const codeLabel = code === null ? '' : ` (${code})`
+      const contextHint =
+        typeof window !== 'undefined' && window.isSecureContext ? '' : ' (Not a secure context)'
+      setGeoMessage(`Location error${codeLabel}: ${message}${contextHint}`)
+    }
   }
 
   const handleShare = async () => {
