@@ -104,6 +104,60 @@ html::-webkit-scrollbar-thumb:hover {
   animation-delay: 0.4s;
 }
 
+@property --border-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes border-sweep {
+  to {
+    --border-angle: 360deg;
+  }
+}
+
+.btn-animated-border {
+  position: relative;
+  isolation: isolate;
+}
+
+.btn-animated-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: 9999px;
+  background: conic-gradient(
+    from var(--border-angle),
+    #5aa48f 0deg 60deg,
+    #3ea884 60deg 120deg,
+    #8fc1a7 120deg 165deg,
+    #f6c77c 165deg 225deg,
+    #ffa348 225deg 270deg,
+    #3a5e8d 270deg 315deg,
+    #5b7aa3 315deg 360deg
+  );
+  opacity: 0;
+  transition: opacity 160ms ease;
+  animation: border-sweep 3.6s linear infinite;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  z-index: 0;
+}
+
+.btn-animated-border:hover::before,
+.btn-animated-border:active::before,
+.btn-animated-border:focus-visible::before {
+  opacity: 1;
+}
+
+.btn-animated-border > * {
+  position: relative;
+  z-index: 1;
+}
+
 @keyframes dot-bounce {
   0%,
   100% {

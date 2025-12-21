@@ -33,7 +33,7 @@ export function useInitialLocation({
       Number.isFinite(parsedLat) &&
       Number.isFinite(parsedLon)
     ) {
-      const nextLocation = {
+      const nextLocation: LocationResult = {
         name: name ?? 'Selected location',
         latitude: parsedLat,
         longitude: parsedLon,

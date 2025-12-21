@@ -249,11 +249,12 @@ export default function HomePage() {
   }
 
   const handleShare = async () => {
-    if (typeof window === 'undefined') return
+    if (typeof window === 'undefined') return false
     try {
       await navigator.clipboard.writeText(window.location.href)
+      return true
     } catch {
-      // Ignore clipboard failures.
+      return false
     }
   }
 

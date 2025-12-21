@@ -10,6 +10,8 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: 'bg-tide-400 text-ink-900 hover:bg-tide-300',
+        glow:
+          'btn-animated-border bg-tide-400/80 text-ink-950 shadow-glow shadow-tide-300/25 hover:bg-tide-300/90',
         outline:
           'border border-ink-200/20 bg-transparent text-ink-50 hover:border-ink-200/40 hover:bg-ink-900/40',
         ghost: 'text-ink-50 hover:bg-ink-900/50',

@@ -157,25 +157,25 @@ async function fetchAreaCodeGeocoding(query: string) {
     throw new Error('Unable to search locations')
   }
   const data = (await response.json()) as NominatimSearchResult[]
-  return data
-    .map((result) => {
-      const name = pickNominatimName(result.address) ?? result.display_name
-      const admin1 = result.address?.state ?? result.address?.region
-      const country = result.address?.country
-      const latitude = result.lat ? Number(result.lat) : NaN
-      const longitude = result.lon ? Number(result.lon) : NaN
-      if (!name || Number.isNaN(latitude) || Number.isNaN(longitude)) {
-        return null
-      }
-      return {
-        name,
-        latitude,
-        longitude,
-        admin1,
-        country,
-      }
-    })
-    .filter((result): result is LocationResult => Boolean(result))
+    return data
+      .map((result): LocationResult | null => {
+        const name = pickNominatimName(result.address) ?? result.display_name
+        const admin1 = result.address?.state ?? result.address?.region
+        const country = result.address?.country
+        const latitude = result.lat ? Number(result.lat) : NaN
+        const longitude = result.lon ? Number(result.lon) : NaN
+        if (!name || Number.isNaN(latitude) || Number.isNaN(longitude)) {
+          return null
+        }
+        return {
+          name,
+          latitude,
+          longitude,
+          ...(admin1 ? { admin1 } : {}),
+          ...(country ? { country } : {}),
+        }
+      })
+      .filter((result): result is LocationResult => result !== null)
 }
 
 async function fetchNominatimGeocoding(query: string) {
@@ -194,25 +194,25 @@ async function fetchNominatimGeocoding(query: string) {
     throw new Error('Unable to search locations')
   }
   const data = (await response.json()) as NominatimSearchResult[]
-  return data
-    .map((result) => {
-      const name = pickNominatimName(result.address) ?? result.display_name
-      const admin1 = result.address?.state ?? result.address?.region
-      const country = result.address?.country
-      const latitude = result.lat ? Number(result.lat) : NaN
-      const longitude = result.lon ? Number(result.lon) : NaN
-      if (!name || Number.isNaN(latitude) || Number.isNaN(longitude)) {
-        return null
-      }
-      return {
-        name,
-        latitude,
-        longitude,
-        admin1,
-        country,
-      }
-    })
-    .filter((result): result is LocationResult => Boolean(result))
+    return data
+      .map((result): LocationResult | null => {
+        const name = pickNominatimName(result.address) ?? result.display_name
+        const admin1 = result.address?.state ?? result.address?.region
+        const country = result.address?.country
+        const latitude = result.lat ? Number(result.lat) : NaN
+        const longitude = result.lon ? Number(result.lon) : NaN
+        if (!name || Number.isNaN(latitude) || Number.isNaN(longitude)) {
+          return null
+        }
+        return {
+          name,
+          latitude,
+          longitude,
+          ...(admin1 ? { admin1 } : {}),
+          ...(country ? { country } : {}),
+        }
+      })
+      .filter((result): result is LocationResult => result !== null)
 }
 
 export async function fetchGeocoding(query: string) {

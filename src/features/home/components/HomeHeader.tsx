@@ -1,4 +1,5 @@
-import { ArrowUpRight, Compass, Info, Link2, Sparkles } from 'lucide-react'
+import { ArrowUpRight, Check, Compass, Info, Link2, Sparkles } from 'lucide-react'
+import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -9,13 +10,30 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import {
+  Toast,
+  ToastClose,
+  ToastDescription,
+  ToastProvider,
+  ToastTitle,
+  ToastViewport,
+} from '@/components/ui/toast'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 type HomeHeaderProps = {
-  onShare: () => void
+  onShare: () => Promise<boolean>
 }
 
 export function HomeHeader({ onShare }: HomeHeaderProps) {
+  const [toastOpen, setToastOpen] = useState(false)
+
+  const handleShareClick = async () => {
+    const didCopy = await onShare()
+    if (didCopy) {
+      setToastOpen(true)
+    }
+  }
+
   return (
     <header className="relative z-10 mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-6 px-6 pb-10 pt-8">
       <div className="flex items-center gap-3">
@@ -27,7 +45,7 @@ export function HomeHeader({ onShare }: HomeHeaderProps) {
           <p className="text-xs uppercase tracking-[0.3em] text-ink-100/80">Wear-ready forecasts</p>
         </div>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="ml-auto flex items-center gap-3">
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">
@@ -91,7 +109,7 @@ export function HomeHeader({ onShare }: HomeHeaderProps) {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="glow" size="sm" onClick={onShare}>
+              <Button variant="glow" size="sm" onClick={handleShareClick}>
                 Share link
                 <ArrowUpRight />
               </Button>
@@ -102,6 +120,19 @@ export function HomeHeader({ onShare }: HomeHeaderProps) {
           </Tooltip>
         </TooltipProvider>
       </div>
+      <ToastProvider duration={2500}>
+        <Toast open={toastOpen} onOpenChange={setToastOpen}>
+          <div className="mt-0.5 rounded-full bg-tide-500/20 p-1 text-tide-200">
+            <Check className="h-4 w-4" />
+          </div>
+          <div className="grid gap-1">
+            <ToastTitle>Link copied</ToastTitle>
+            <ToastDescription>Your current plan is ready to share.</ToastDescription>
+          </div>
+          <ToastClose />
+        </Toast>
+        <ToastViewport />
+      </ToastProvider>
     </header>
   )
 }
