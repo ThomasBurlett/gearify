@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 
 import type { LoadStatus } from '@/features/home/types'
-import type { LocationResult } from '@/lib/weather'
+import type { LocationResult, WeatherData } from '@/lib/weather'
 import { fetchForecast } from '@/lib/weather'
 
 type UseForecastDataArgs = {
