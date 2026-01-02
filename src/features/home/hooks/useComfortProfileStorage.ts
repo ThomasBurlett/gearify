@@ -1,10 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import {
-  DEFAULT_COMFORT_PROFILE,
-  normalizeComfortProfile,
-  type ComfortProfile,
-} from '@/lib/gear'
+import { DEFAULT_COMFORT_PROFILE, normalizeComfortProfile, type ComfortProfile } from '@/lib/gear'
 
 const COMFORT_PROFILE_STORAGE_KEY = 'gearify.comfortProfile'
 

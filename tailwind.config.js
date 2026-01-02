@@ -2,6 +2,7 @@
 import tailwindcssAnimate from 'tailwindcss-animate'
 
 export default {
+  darkMode: ['class'],
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
@@ -42,10 +43,20 @@ export default {
           800: '#6f3514',
           900: '#5a2c13',
         },
+        sidebar: {
+          DEFAULT: 'hsl(var(--sidebar-background))',
+          foreground: 'hsl(var(--sidebar-foreground))',
+          primary: 'hsl(var(--sidebar-primary))',
+          'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+          accent: 'hsl(var(--sidebar-accent))',
+          'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+          border: 'hsl(var(--sidebar-border))',
+          ring: 'hsl(var(--sidebar-ring))',
+        },
       },
       fontFamily: {
-        sans: ['"IBM Plex Sans"', 'sans-serif'],
-        display: ['"Space Grotesk"', 'sans-serif'],
+        sans: ['IBM Plex Sans', 'sans-serif'],
+        display: ['Space Grotesk', 'sans-serif'],
       },
       boxShadow: {
         glow: '0 30px 80px -50px rgba(78, 160, 130, 0.7)',

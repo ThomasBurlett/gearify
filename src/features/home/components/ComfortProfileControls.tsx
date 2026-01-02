@@ -50,7 +50,10 @@ export function ComfortProfileControls({ profile, onChange }: ComfortProfileCont
               key={option.value}
               type="button"
               onClick={() => onChange({ ...profile, temperaturePreference: option.value })}
-              className={cn(optionClass(profile.temperaturePreference === option.value), 'w-full sm:w-auto')}
+              className={cn(
+                optionClass(profile.temperaturePreference === option.value),
+                'w-full sm:w-auto'
+              )}
             >
               {option.label}
             </button>
@@ -66,7 +69,10 @@ export function ComfortProfileControls({ profile, onChange }: ComfortProfileCont
               key={option.value}
               type="button"
               onClick={() => onChange({ ...profile, windSensitivity: option.value })}
-              className={cn(optionClass(profile.windSensitivity === option.value), 'w-full sm:w-auto')}
+              className={cn(
+                optionClass(profile.windSensitivity === option.value),
+                'w-full sm:w-auto'
+              )}
             >
               {option.label}
             </button>
@@ -82,7 +88,10 @@ export function ComfortProfileControls({ profile, onChange }: ComfortProfileCont
               key={option.value}
               type="button"
               onClick={() => onChange({ ...profile, precipitationPreference: option.value })}
-              className={cn(optionClass(profile.precipitationPreference === option.value), 'w-full sm:w-auto')}
+              className={cn(
+                optionClass(profile.precipitationPreference === option.value),
+                'w-full sm:w-auto'
+              )}
             >
               {option.label}
             </button>

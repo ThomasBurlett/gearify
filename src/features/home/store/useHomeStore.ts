@@ -21,6 +21,13 @@ type HomeState = {
   comfortProfile: ComfortProfile
   exertion: ExertionLevel
   duration: TripDuration
+  checkedPackItems: string[]
+  checkedWearItems: string[]
+  activePlanId: string | null
+  customPackItems: string[]
+  removedPackItems: string[]
+  removedWearItems: string[]
+  addedWearItems: string[]
   setSport: (sport: SportType) => void
   setSelectedTime: (value: string) => void
   setLocation: (location: LocationResult | null) => void
@@ -31,6 +38,13 @@ type HomeState = {
   setComfortProfile: (profile: ComfortProfile) => void
   setExertion: (exertion: ExertionLevel) => void
   setDuration: (duration: TripDuration) => void
+  setCheckedPackItems: (items: string[] | ((prev: string[]) => string[])) => void
+  setCheckedWearItems: (items: string[] | ((prev: string[]) => string[])) => void
+  setActivePlanId: (id: string | null) => void
+  setCustomPackItems: (items: string[] | ((prev: string[]) => string[])) => void
+  setRemovedPackItems: (items: string[] | ((prev: string[]) => string[])) => void
+  setRemovedWearItems: (items: string[] | ((prev: string[]) => string[])) => void
+  setAddedWearItems: (items: string[] | ((prev: string[]) => string[])) => void
 }
 
 export const useHomeStore = create<HomeState>((set) => ({
@@ -44,6 +58,13 @@ export const useHomeStore = create<HomeState>((set) => ({
   comfortProfile: DEFAULT_COMFORT_PROFILE,
   exertion: DEFAULT_WEAR_CONTEXT.exertion,
   duration: DEFAULT_WEAR_CONTEXT.duration,
+  checkedPackItems: [],
+  checkedWearItems: [],
+  activePlanId: null,
+  customPackItems: [],
+  removedPackItems: [],
+  removedWearItems: [],
+  addedWearItems: [],
   setSport: (sport) => set({ sport }),
   setSelectedTime: (selectedTime) => set({ selectedTime }),
   setLocation: (location) => set({ location }),
@@ -54,4 +75,47 @@ export const useHomeStore = create<HomeState>((set) => ({
   setComfortProfile: (comfortProfile) => set({ comfortProfile }),
   setExertion: (exertion) => set({ exertion }),
   setDuration: (duration) => set({ duration }),
+  setCheckedPackItems: (checkedPackItems) =>
+    set((state) => ({
+      checkedPackItems:
+        typeof checkedPackItems === 'function'
+          ? checkedPackItems(state.checkedPackItems)
+          : checkedPackItems,
+    })),
+  setCheckedWearItems: (checkedWearItems) =>
+    set((state) => ({
+      checkedWearItems:
+        typeof checkedWearItems === 'function'
+          ? checkedWearItems(state.checkedWearItems)
+          : checkedWearItems,
+    })),
+  setActivePlanId: (activePlanId) => set({ activePlanId }),
+  setCustomPackItems: (customPackItems) =>
+    set((state) => ({
+      customPackItems:
+        typeof customPackItems === 'function'
+          ? customPackItems(state.customPackItems)
+          : customPackItems,
+    })),
+  setRemovedPackItems: (removedPackItems) =>
+    set((state) => ({
+      removedPackItems:
+        typeof removedPackItems === 'function'
+          ? removedPackItems(state.removedPackItems)
+          : removedPackItems,
+    })),
+  setRemovedWearItems: (removedWearItems) =>
+    set((state) => ({
+      removedWearItems:
+        typeof removedWearItems === 'function'
+          ? removedWearItems(state.removedWearItems)
+          : removedWearItems,
+    })),
+  setAddedWearItems: (addedWearItems) =>
+    set((state) => ({
+      addedWearItems:
+        typeof addedWearItems === 'function'
+          ? addedWearItems(state.addedWearItems)
+          : addedWearItems,
+    })),
 }))

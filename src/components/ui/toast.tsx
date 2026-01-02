@@ -1,5 +1,6 @@
 import * as React from 'react'
 import * as ToastPrimitives from '@radix-ui/react-toast'
+import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
@@ -9,16 +10,24 @@ const ToastProvider = ToastPrimitives.Provider
 const ToastViewport = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Viewport>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>
->(({ className, ...props }, ref) => (
-  <ToastPrimitives.Viewport
-    ref={ref}
-    className={cn(
-      'fixed bottom-6 left-1/2 z-[9999] flex w-[min(90vw,22rem)] -translate-x-1/2 flex-col gap-2',
-      className
-    )}
-    {...props}
-  />
-))
+>(({ className, ...props }, ref) =>
+  (() => {
+    const viewport = (
+      <ToastPrimitives.Viewport
+        ref={ref}
+        className={cn(
+          'fixed bottom-6 left-1/2 z-[9999] flex w-[min(90vw,22rem)] -translate-x-1/2 flex-col gap-2',
+          className
+        )}
+        {...props}
+      />
+    )
+    if (typeof document === 'undefined') {
+      return viewport
+    }
+    return createPortal(viewport, document.body)
+  })()
+)
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
 const Toast = React.forwardRef<

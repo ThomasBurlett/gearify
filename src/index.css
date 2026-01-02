@@ -139,7 +139,7 @@ html::-webkit-scrollbar-thumb:hover {
   );
   opacity: 0;
   transition: opacity 160ms ease;
-  animation: border-sweep 3.6s linear infinite;
+  animation: none;
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
@@ -151,10 +151,23 @@ html::-webkit-scrollbar-thumb:hover {
   z-index: 0;
 }
 
-.btn-animated-border:hover::before,
-.btn-animated-border:active::before,
-.btn-animated-border:focus-visible::before {
-  opacity: 1;
+@media (hover: hover) {
+  .btn-animated-border::before {
+    animation: border-sweep 3.6s linear infinite;
+  }
+
+  .btn-animated-border:hover::before,
+  .btn-animated-border:active::before,
+  .btn-animated-border:focus-visible::before {
+    opacity: 1;
+  }
+}
+
+@media (hover: none) {
+  .btn-animated-border:active::before,
+  .btn-animated-border:focus-visible::before {
+    opacity: 1;
+  }
 }
 
 .btn-animated-border > * {
@@ -169,5 +182,18 @@ html::-webkit-scrollbar-thumb:hover {
   }
   50% {
     opacity: 1;
+  }
+}
+
+@layer base {
+  :root {
+    --sidebar-background: 186 26% 7.5%;
+    --sidebar-foreground: 140 15.8% 96.3%;
+    --sidebar-primary: 159.6 46.1% 45.1%;
+    --sidebar-primary-foreground: 186 26% 7.5%;
+    --sidebar-accent: 157.5 16% 19.6%;
+    --sidebar-accent-foreground: 140 15.8% 96.3%;
+    --sidebar-border: 155 18.2% 12.9%;
+    --sidebar-ring: 159.6 46.1% 45.1%;
   }
 }

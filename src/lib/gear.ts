@@ -25,6 +25,58 @@ export type WearContext = {
 }
 
 export type BodyZone = 'feet' | 'legs' | 'torso' | 'hands' | 'neckFace' | 'head' | 'eyes'
+export type WearItemCatalogEntry = { item: string; zone: BodyZone }
+
+export const WEAR_ITEM_CATALOG: WearItemCatalogEntry[] = [
+  { item: 'Running shoes', zone: 'feet' },
+  { item: 'Running socks', zone: 'feet' },
+  { item: 'Wool socks', zone: 'feet' },
+  { item: 'Ski boots', zone: 'feet' },
+  { item: 'Ski socks', zone: 'feet' },
+  { item: 'Shorts', zone: 'legs' },
+  { item: 'Tights', zone: 'legs' },
+  { item: 'Tights or knee sleeves', zone: 'legs' },
+  { item: 'Thermal tights', zone: 'legs' },
+  { item: 'Insulated pants', zone: 'legs' },
+  { item: 'Shell pants', zone: 'legs' },
+  { item: 'Ultralight top', zone: 'torso' },
+  { item: 'Short-sleeve top', zone: 'torso' },
+  { item: 'Long-sleeve top', zone: 'torso' },
+  { item: 'Long-sleeve mid layer', zone: 'torso' },
+  { item: 'Thermal mid layer', zone: 'torso' },
+  { item: 'Warm mid layer', zone: 'torso' },
+  { item: 'Mid layer', zone: 'torso' },
+  { item: 'Heavy mid layer', zone: 'torso' },
+  { item: 'Light mid layer', zone: 'torso' },
+  { item: 'Light layer for cooldown', zone: 'torso' },
+  { item: 'Light shell', zone: 'torso' },
+  { item: 'Light shell if breezy', zone: 'torso' },
+  { item: 'Wind shell', zone: 'torso' },
+  { item: 'Wind-resistant jacket', zone: 'torso' },
+  { item: 'Waterproof shell', zone: 'torso' },
+  { item: 'Shell jacket', zone: 'torso' },
+  { item: 'Storm shell', zone: 'torso' },
+  { item: 'Insulated jacket', zone: 'torso' },
+  { item: 'Insulated running jacket', zone: 'torso' },
+  { item: 'Spare dry layer', zone: 'torso' },
+  { item: 'Light gloves', zone: 'hands' },
+  { item: 'Gloves', zone: 'hands' },
+  { item: 'Insulated gloves', zone: 'hands' },
+  { item: 'Mittens', zone: 'hands' },
+  { item: 'Hand warmers', zone: 'hands' },
+  { item: 'Neck gaiter', zone: 'neckFace' },
+  { item: 'Balaclava', zone: 'neckFace' },
+  { item: 'Hat', zone: 'head' },
+  { item: 'Beanie or ear band', zone: 'head' },
+  { item: 'Beanie', zone: 'head' },
+  { item: 'Cap or visor', zone: 'head' },
+  { item: 'Sun cap', zone: 'head' },
+  { item: 'Brimmed cap', zone: 'head' },
+  { item: 'Helmet liner', zone: 'head' },
+  { item: 'Helmet', zone: 'head' },
+  { item: 'Goggles', zone: 'eyes' },
+  { item: 'Goggle cover', zone: 'eyes' },
+]
 
 export type WearPlan = {
   primary: string[]
@@ -173,7 +225,8 @@ function computeEffectiveTemp(
         : 0
   if (comfortOffset !== 0) {
     effective += comfortOffset
-    const label = comfortOffset > 0 ? `Runs warm: +${comfortOffset}F` : `Runs cold: ${comfortOffset}F`
+    const label =
+      comfortOffset > 0 ? `Runs warm: +${comfortOffset}F` : `Runs cold: ${comfortOffset}F`
     adjustments.push(label)
   }
 
@@ -181,7 +234,8 @@ function computeEffectiveTemp(
   const isWindy = weather.windSpeed >= windThreshold || weather.windGusts >= gustThreshold
   let windPenalty = 0
   if (isWindy) {
-    windPenalty = profile.windSensitivity === 'high' ? -6 : profile.windSensitivity === 'low' ? -3 : -4
+    windPenalty =
+      profile.windSensitivity === 'high' ? -6 : profile.windSensitivity === 'low' ? -3 : -4
     if (weather.windGusts >= gustThreshold + 10) {
       windPenalty -= 2
     }
@@ -190,8 +244,7 @@ function computeEffectiveTemp(
   }
 
   const precipThreshold = getPrecipThreshold(profile)
-  const isWet =
-    weather.precipitationProbability >= precipThreshold || weather.precipitation > 0.05
+  const isWet = weather.precipitationProbability >= precipThreshold || weather.precipitation > 0.05
   let precipPenalty = 0
   if (isWet) {
     precipPenalty =
@@ -209,7 +262,9 @@ function computeEffectiveTemp(
   }
 
   if (isWet) {
-    const label = weather.conditionLabel.toLowerCase().includes('snow') ? 'Snow expected' : 'Rain likely'
+    const label = weather.conditionLabel.toLowerCase().includes('snow')
+      ? 'Snow expected'
+      : 'Rain likely'
     reasons.push(label)
   }
   if (isWindy) {

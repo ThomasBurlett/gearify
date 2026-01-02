@@ -43,12 +43,12 @@ export function ForecastSummaryHeader({
         )}
       </CardTitle>
       <CardDescription className={status === 'loading' ? 'opacity-0' : 'opacity-100'}>
-        <div className="flex flex-wrap items-center gap-3">
+        <span className="inline-flex flex-wrap items-center gap-3">
           <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-spice-500/20 text-spice-100">
             <ConditionIcon className="h-5 w-5" aria-hidden="true" />
           </span>
           <span>{description}</span>
-        </div>
+        </span>
       </CardDescription>
     </CardHeader>
   )

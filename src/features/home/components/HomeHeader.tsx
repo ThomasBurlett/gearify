@@ -1,152 +1,29 @@
-import { ArrowUpRight, Check, Compass, Info, Link2, Sparkles } from 'lucide-react'
-import { useRef, useState } from 'react'
-import confetti from 'canvas-confetti'
-
-import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import {
-  Toast,
-  ToastClose,
-  ToastDescription,
-  ToastProvider,
-  ToastTitle,
-  ToastViewport,
-} from '@/components/ui/toast'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { SidebarTrigger } from '@/components/ui/sidebar'
 
 type HomeHeaderProps = {
-  onShare: () => Promise<boolean>
+  activePlanName?: string | null
 }
 
-export function HomeHeader({ onShare }: HomeHeaderProps) {
-  const [toastOpen, setToastOpen] = useState(false)
-  const shareButtonRef = useRef<HTMLButtonElement | null>(null)
-
-  const handleShareClick = async () => {
-    const didCopy = await onShare()
-    if (didCopy) {
-      const rect = shareButtonRef.current?.getBoundingClientRect()
-      const origin = rect
-        ? {
-            x: (rect.left + rect.width / 2) / window.innerWidth,
-            y: (rect.top + rect.height / 2) / window.innerHeight,
-          }
-        : { x: 0.5, y: 0.2 }
-      confetti({
-        particleCount: 120,
-        spread: 70,
-        startVelocity: 30,
-        origin,
-        colors: ['#5aa48f', '#3ea884', '#8fc1a7', '#f6c77c', '#ffa348', '#3a5e8d'],
-      })
-      setToastOpen(true)
-    }
-  }
-
+export function HomeHeader({ activePlanName }: HomeHeaderProps) {
   return (
-    <header className="relative z-10 mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-6 px-6 pb-10 pt-8">
-      <div className="flex items-center gap-3">
-        <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-ink-100/90 ring-1 ring-ink-200/40 shadow-glow">
-          <img src="/gearify-logo.svg" alt="Gearify logo" className="h-10 w-10" />
-        </div>
+    <header className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-ink-200/10 bg-ink-950/30 px-6 py-5">
+      <div className="flex flex-wrap items-center gap-4">
         <div>
-          <p className="font-display text-xl font-semibold tracking-tight text-ink-50">Gearify</p>
-          <p className="text-xs uppercase tracking-[0.3em] text-ink-100/80">Wear-ready forecasts</p>
+          <p className="font-display text-2xl font-semibold tracking-tight text-ink-50">
+            Plan overview
+          </p>
+          <p className="text-xs uppercase tracking-[0.28em] text-ink-100/70">
+            Forecast and gear guidance
+          </p>
         </div>
-      </div>
-      <div className="ml-auto flex items-center gap-3">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline" size="sm">
-              About
-              <Info />
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ink-100/90 ring-1 ring-ink-200/40">
-                  <img src="/gearify-logo.svg" alt="Gearify logo" className="h-7 w-7" />
-                </div>
-                <DialogTitle>Gearify is your outdoor-ready briefing</DialogTitle>
-              </div>
-              <DialogDescription className="text-ink-50/90">
-                Dial in a location, time, and sport to get the exact conditions and the gear list
-                you should bring.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="mt-6 grid gap-4">
-              <div className="rounded-2xl border border-ink-200/15 bg-ink-900/80 p-4">
-                <div className="flex items-center gap-2 text-ink-50">
-                  <Compass className="h-4 w-4 text-tide-200" />
-                  <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">What you get</p>
-                </div>
-                <p className="mt-2 text-sm text-ink-50/85">
-                  A snapshot of temperature, wind, and precipitation at the hour you care about,
-                  plus visibility and cloud cover to set expectations.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-ink-200/15 bg-ink-900/80 p-4">
-                <div className="flex items-center gap-2 text-ink-50">
-                  <Sparkles className="h-4 w-4 text-tide-200" />
-                  <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">
-                    Gear guidance
-                  </p>
-                </div>
-                <p className="mt-2 text-sm text-ink-50/85">
-                  Recommendations tuned for running or skiing so you know what to wear and what to
-                  pack without second guessing.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-ink-200/15 bg-ink-900/80 p-4">
-                <div className="flex items-center gap-2 text-ink-50">
-                  <Link2 className="h-4 w-4 text-tide-200" />
-                  <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">
-                    Built to share
-                  </p>
-                </div>
-                <p className="mt-2 text-sm text-ink-50/85">
-                  Share links keep the plan synced with your choices so your group stays aligned on
-                  timing and conditions.
-                </p>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="glow" size="sm" onClick={handleShareClick} ref={shareButtonRef}>
-                Share link
-                <ArrowUpRight />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              Shareable links keep your location, time, and sport synced.
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-      <ToastProvider duration={2500}>
-        <Toast open={toastOpen} onOpenChange={setToastOpen}>
-          <div className="mt-0.5 rounded-full bg-tide-500/20 p-1 text-tide-200">
-            <Check className="h-4 w-4" />
+        {activePlanName && (
+          <div className="inline-flex items-center gap-2 rounded-full border border-tide-300/40 bg-tide-500/15 px-3 py-1 text-[11px] uppercase tracking-[0.24em] text-tide-100">
+            <span className="h-1.5 w-1.5 rounded-full bg-tide-200 shadow-[0_0_8px_rgba(113,204,185,0.8)]" />
+            Active plan: {activePlanName}
           </div>
-          <div className="grid gap-1">
-            <ToastTitle>Link copied</ToastTitle>
-            <ToastDescription>Your current plan is ready to share.</ToastDescription>
-          </div>
-          <ToastClose />
-        </Toast>
-        <ToastViewport />
-      </ToastProvider>
+        )}
+      </div>
+      <SidebarTrigger className="md:hidden" />
     </header>
   )
 }

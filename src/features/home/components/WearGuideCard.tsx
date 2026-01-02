@@ -4,22 +4,23 @@ import {
   HatGlasses,
   PersonStanding,
   RectangleGoggles,
+  Search,
   Shirt,
   VenetianMask,
+  X,
 } from 'lucide-react'
-import { useMemo, useState, type ComponentType } from 'react'
+import { useMemo, useRef, useState, type ComponentType } from 'react'
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Command, CommandEmpty, CommandItem, CommandList } from '@/components/ui/command'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ComfortProfileControls } from '@/features/home/components/ComfortProfileControls'
+import { Input } from '@/components/ui/input'
+import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import type {
-  ComfortProfile,
-  ExertionLevel,
-  TripDuration,
-  WearPlan,
-} from '@/lib/gear'
+import type { ComfortProfile, ExertionLevel, TripDuration, WearPlan } from '@/lib/gear'
+import { WEAR_ITEM_CATALOG } from '@/lib/gear'
 import type { SportType } from '@/lib/weather'
 import type { LoadStatus } from '@/features/home/types'
 
@@ -46,6 +47,12 @@ type WearGuideCardProps = {
   wearPlan: WearPlan | null
   colderWearPlan: WearPlan | null
   wetterWearPlan: WearPlan | null
+  checkedWearItems: string[]
+  onCheckedWearItemsChange: (items: string[]) => void
+  removedWearItems: string[]
+  onRemovedWearItemsChange: (items: string[]) => void
+  addedWearItems: string[]
+  onAddedWearItemsChange: (items: string[]) => void
   comfortProfile: ComfortProfile
   onComfortProfileChange: (profile: ComfortProfile) => void
   exertion: ExertionLevel
@@ -80,12 +87,28 @@ const coverageSections: Array<{
   { key: 'eyes', label: 'Eyes', icon: RectangleGoggles, accent: 'text-ink-100' },
 ]
 
+const CATEGORY_LABELS: Record<keyof WearPlan['coverage'], string> = {
+  feet: 'Feet',
+  legs: 'Legs',
+  torso: 'Torso',
+  hands: 'Hands',
+  neckFace: 'Neck + face',
+  head: 'Head',
+  eyes: 'Eyes',
+}
+
 export function WearGuideCard({
   status,
   sport,
   wearPlan,
   colderWearPlan,
   wetterWearPlan,
+  checkedWearItems,
+  onCheckedWearItemsChange,
+  removedWearItems,
+  onRemovedWearItemsChange,
+  addedWearItems,
+  onAddedWearItemsChange,
   comfortProfile,
   onComfortProfileChange,
   exertion,
@@ -94,12 +117,109 @@ export function WearGuideCard({
   onDurationChange,
 }: WearGuideCardProps) {
   const [scenario, setScenario] = useState<Scenario>('now')
+  const [isPickerOpen, setIsPickerOpen] = useState(false)
+  const pickerInputRef = useRef<HTMLInputElement | null>(null)
 
   const activePlan = useMemo(() => {
     if (scenario === 'colder') return colderWearPlan
     if (scenario === 'wetter') return wetterWearPlan
     return wearPlan
   }, [scenario, wearPlan, colderWearPlan, wetterWearPlan])
+
+  const [itemQuery, setItemQuery] = useState('')
+  const checkedSet = useMemo(() => new Set(checkedWearItems), [checkedWearItems])
+  const addedSet = useMemo(() => new Set(addedWearItems), [addedWearItems])
+  const catalogByItem = useMemo(
+    () => new Map(WEAR_ITEM_CATALOG.map(({ item, zone }) => [item, zone])),
+    []
+  )
+  const baseItems = useMemo(() => {
+    if (!activePlan) return new Set<string>()
+    const coverage = activePlan.coverage
+    const optional = activePlan.optionalCoverage
+    return new Set([
+      ...coverage.feet,
+      ...coverage.legs,
+      ...coverage.torso,
+      ...coverage.hands,
+      ...coverage.neckFace,
+      ...coverage.head,
+      ...coverage.eyes,
+      ...Object.values(optional).flat(),
+    ])
+  }, [activePlan])
+
+  const availableItems = useMemo(() => {
+    return WEAR_ITEM_CATALOG.map((entry) => entry.item)
+  }, [])
+
+  const filteredItems = useMemo(() => {
+    const query = itemQuery.trim().toLowerCase()
+    return availableItems.filter((item) => {
+      const isBase = baseItems.has(item)
+      const isRemoved = removedWearItems.includes(item)
+      const isAdded = addedSet.has(item)
+      if ((isBase && !isRemoved) || isAdded) return false
+      if (!query) return true
+      const zone = catalogByItem.get(item)
+      const categoryLabel = zone ? CATEGORY_LABELS[zone] : ''
+      return item.toLowerCase().includes(query) || categoryLabel.toLowerCase().includes(query)
+    })
+  }, [availableItems, itemQuery, baseItems, removedWearItems, addedSet, catalogByItem])
+
+  const handleToggleWearItem = (item: string) => {
+    if (checkedSet.has(item)) {
+      onCheckedWearItemsChange(checkedWearItems.filter((entry) => entry !== item))
+    } else {
+      onCheckedWearItemsChange([...checkedWearItems, item])
+    }
+  }
+
+  const handleRemoveWearItem = (item: string) => {
+    if (!baseItems.has(item) && addedSet.has(item)) {
+      onAddedWearItemsChange(addedWearItems.filter((entry) => entry !== item))
+      onCheckedWearItemsChange(checkedWearItems.filter((entry) => entry !== item))
+      return
+    }
+    if (!removedWearItems.includes(item)) {
+      onRemovedWearItemsChange([...removedWearItems, item])
+    }
+    onCheckedWearItemsChange(checkedWearItems.filter((entry) => entry !== item))
+  }
+
+  const handleAddWearItem = (item: string) => {
+    if (baseItems.has(item)) {
+      if (removedWearItems.includes(item)) {
+        onRemovedWearItemsChange(removedWearItems.filter((entry) => entry !== item))
+      }
+      return
+    }
+    if (!addedSet.has(item)) {
+      onAddedWearItemsChange([...addedWearItems, item])
+    }
+  }
+
+  const resetAddedItems = () => {
+    if (addedWearItems.length === 0) return
+    onAddedWearItemsChange([])
+    onCheckedWearItemsChange(checkedWearItems.filter((item) => !addedSet.has(item)))
+  }
+
+  const handlePickerOpenChange = (open: boolean) => {
+    if (!open && document.activeElement === pickerInputRef.current) {
+      return
+    }
+    setIsPickerOpen(open)
+  }
+
+  const handlePickerInteractOutside = (event: Event) => {
+    const target = event.target as Node | null
+    if (target && pickerInputRef.current?.contains(target)) {
+      event.preventDefault()
+      return
+    }
+    setIsPickerOpen(false)
+  }
 
   return (
     <Card>
@@ -132,59 +252,197 @@ export function WearGuideCard({
                         : 'Layer breakdown (wet)'}
                   </p>
                 </div>
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  {coverageSections.map((section) => {
-                    const items = activePlan.coverage[section.key]
-                    const optionalItems = activePlan.optionalCoverage[section.key]
-                    const Icon = section.icon
-                    return (
-                      <div
-                        key={section.key}
-                        className="rounded-2xl border border-ink-200/10 bg-ink-950/50 p-4"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-200/10 bg-ink-900/60">
-                            <Icon className={cn('h-4 w-4', section.accent)} />
-                          </div>
-                          <p className="text-xs uppercase tracking-[0.2em] text-ink-100/60">
-                            {section.label}
-                          </p>
-                        </div>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {items.length ? (
-                            items.map((item) => (
-                              <span
-                                key={item}
-                                className="rounded-full border border-ink-200/15 bg-ink-900/60 px-3 py-1 text-xs text-ink-50"
-                              >
-                                {item}
-                              </span>
-                            ))
-                          ) : (
-                            <span className="text-xs text-ink-100/50">None</span>
-                          )}
-                          {optionalItems?.map((item) => (
-                            <span
-                              key={`optional-${item}`}
-                              className="rounded-full border border-dashed border-ink-200/20 px-3 py-1 text-xs text-ink-100/70"
-                            >
-                              Optional: {item}
-                            </span>
-                          ))}
-                        </div>
+                <div className="mt-4 space-y-4">
+                  <Popover open={isPickerOpen} onOpenChange={handlePickerOpenChange} modal={false}>
+                    <PopoverAnchor asChild>
+                      <div className="relative">
+                        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-100/60" />
+                        <Input
+                          ref={pickerInputRef}
+                          placeholder="Search items to add"
+                          value={itemQuery}
+                          onFocus={() => setIsPickerOpen(true)}
+                          onChange={(event) => {
+                            setItemQuery(event.target.value)
+                            setIsPickerOpen(true)
+                          }}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Escape') {
+                              setIsPickerOpen(false)
+                            }
+                          }}
+                          className="h-11 pl-9 pr-9"
+                        />
+                        {itemQuery.trim() ? (
+                          <button
+                            type="button"
+                            aria-label="Clear item search"
+                            onClick={() => {
+                              setItemQuery('')
+                              setIsPickerOpen(false)
+                              pickerInputRef.current?.focus()
+                            }}
+                            className="absolute right-3 top-3 flex h-4 w-4 items-center justify-center text-ink-100/70 transition hover:text-ink-50"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        ) : null}
                       </div>
-                    )
-                  })}
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {activePlan.reasons.map((reason) => (
-                    <span
-                      key={reason}
-                      className="rounded-full border border-ink-200/20 bg-ink-900/60 px-3 py-1 text-xs uppercase tracking-[0.2em] text-ink-100/80"
-                    >
-                      {reason}
-                    </span>
-                  ))}
+                    </PopoverAnchor>
+                    {isPickerOpen && (
+                      <PopoverContent
+                        className="w-[min(90vw,22rem)]"
+                        align="start"
+                        onOpenAutoFocus={(event) => event.preventDefault()}
+                        onCloseAutoFocus={(event) => event.preventDefault()}
+                        onEscapeKeyDown={() => setIsPickerOpen(false)}
+                        onInteractOutside={handlePickerInteractOutside}
+                      >
+                        <Command shouldFilter={false}>
+                          <CommandList className="max-h-56 pr-1">
+                            {filteredItems.length > 0 ? (
+                              filteredItems.map((item) => {
+                                const isBase = baseItems.has(item)
+                                const isRemoved = removedWearItems.includes(item)
+                                const isAdded = addedSet.has(item)
+                                const isActive = (isBase && !isRemoved) || isAdded
+                                return (
+                                  <CommandItem
+                                    key={`pick-${item}`}
+                                    onSelect={() => {
+                                      if (isActive) return
+                                      handleAddWearItem(item)
+                                      setItemQuery('')
+                                      setIsPickerOpen(false)
+                                    }}
+                                    disabled={isActive}
+                                    className={
+                                      isActive
+                                        ? 'cursor-not-allowed opacity-50'
+                                        : 'hover:border-tide-300/50 hover:bg-ink-950/60'
+                                    }
+                                  >
+                                    <span className="flex flex-1 items-center justify-between gap-3">
+                                      <span>{isActive ? item : `Add ${item}`}</span>
+                                      <span className="rounded-full border border-ink-200/20 px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-ink-100/70">
+                                        {catalogByItem.get(item) ?? 'Gear'}
+                                      </span>
+                                    </span>
+                                  </CommandItem>
+                                )
+                              })
+                            ) : (
+                              <CommandEmpty>No matches found.</CommandEmpty>
+                            )}
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    )}
+                  </Popover>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {coverageSections.map((section) => {
+                      const items = activePlan.coverage[section.key].filter(
+                        (item) => !removedWearItems.includes(item)
+                      )
+                      const optionalItems = (activePlan.optionalCoverage[section.key] ?? []).filter(
+                        (item) => !removedWearItems.includes(item)
+                      )
+                      const addedItems = addedWearItems.filter(
+                        (item) => catalogByItem.get(item) === section.key
+                      )
+                      const displayAddedItems = addedItems.filter(
+                        (item) => !items.includes(item) && !optionalItems.includes(item)
+                      )
+                      const displayItems = [...items, ...displayAddedItems]
+                      const Icon = section.icon
+                      return (
+                        <div
+                          key={section.key}
+                          className="rounded-2xl border border-ink-200/10 bg-ink-950/50 p-4"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-200/10 bg-ink-900/60">
+                              <Icon className={cn('h-4 w-4', section.accent)} />
+                            </div>
+                            <p className="text-xs uppercase tracking-[0.2em] text-ink-100/60">
+                              {section.label}
+                            </p>
+                          </div>
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {displayItems.length ? (
+                              displayItems.map((item) => (
+                                <div
+                                  key={item}
+                                  className={cn(
+                                    'flex items-center gap-2 rounded-full border border-ink-200/15 bg-ink-900/60 px-3 py-1 text-xs text-ink-50 transition',
+                                    checkedSet.has(item) &&
+                                      'border-tide-300/40 bg-ink-900/70 text-ink-100'
+                                  )}
+                                >
+                                  <label className="flex cursor-pointer items-center gap-2">
+                                    <input
+                                      type="checkbox"
+                                      checked={checkedSet.has(item)}
+                                      onChange={() => handleToggleWearItem(item)}
+                                      className="h-3.5 w-3.5 rounded border-ink-200/30 bg-ink-950/60 text-tide-300 focus:ring-tide-300/60"
+                                    />
+                                    {item}
+                                  </label>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveWearItem(item)}
+                                    className="ml-1 text-xs text-ink-100/60 transition hover:text-spice-200"
+                                    aria-label="Remove item"
+                                  >
+                                    x
+                                  </button>
+                                </div>
+                              ))
+                            ) : (
+                              <span className="text-xs text-ink-100/50">None</span>
+                            )}
+                            {optionalItems.map((item) => (
+                              <div
+                                key={`optional-${item}`}
+                                className={cn(
+                                  'flex items-center gap-2 rounded-full border border-dashed border-ink-200/20 px-3 py-1 text-xs text-ink-100/70 transition',
+                                  checkedSet.has(item) && 'border-tide-300/40 text-ink-100'
+                                )}
+                              >
+                                <label className="flex cursor-pointer items-center gap-2">
+                                  <input
+                                    type="checkbox"
+                                    checked={checkedSet.has(item)}
+                                    onChange={() => handleToggleWearItem(item)}
+                                    className="h-3.5 w-3.5 rounded border-ink-200/30 bg-ink-950/60 text-tide-300 focus:ring-tide-300/60"
+                                  />
+                                  Optional: {item}
+                                </label>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveWearItem(item)}
+                                  className="ml-1 text-xs text-ink-100/60 transition hover:text-spice-200"
+                                  aria-label="Remove item"
+                                >
+                                  x
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {activePlan.reasons.map((reason) => (
+                      <span
+                        key={reason}
+                        className="rounded-full border border-ink-200/20 bg-ink-900/60 px-3 py-1 text-xs uppercase tracking-[0.2em] text-ink-100/80"
+                      >
+                        {reason}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -200,14 +458,20 @@ export function WearGuideCard({
                       <button
                         type="button"
                         className={cn(optionClass(scenario === 'now'), 'w-full sm:w-auto')}
-                        onClick={() => setScenario('now')}
+                        onClick={() => {
+                          resetAddedItems()
+                          setScenario('now')
+                        }}
                       >
                         Now
                       </button>
                       <button
                         type="button"
                         className={cn(optionClass(scenario === 'colder'), 'w-full sm:w-auto')}
-                        onClick={() => setScenario('colder')}
+                        onClick={() => {
+                          resetAddedItems()
+                          setScenario('colder')
+                        }}
                         disabled={!colderWearPlan}
                       >
                         10F colder
@@ -215,7 +479,10 @@ export function WearGuideCard({
                       <button
                         type="button"
                         className={cn(optionClass(scenario === 'wetter'), 'w-full sm:w-auto')}
-                        onClick={() => setScenario('wetter')}
+                        onClick={() => {
+                          resetAddedItems()
+                          setScenario('wetter')
+                        }}
                         disabled={!wetterWearPlan}
                       >
                         Gets wet
@@ -224,7 +491,10 @@ export function WearGuideCard({
                   </div>
                   <ComfortProfileControls
                     profile={comfortProfile}
-                    onChange={onComfortProfileChange}
+                    onChange={(profile) => {
+                      resetAddedItems()
+                      onComfortProfileChange(profile)
+                    }}
                   />
                   <div className="space-y-2">
                     <p className="text-xs uppercase tracking-[0.2em] text-ink-100/60">
@@ -235,7 +505,10 @@ export function WearGuideCard({
                         <button
                           key={option.value}
                           type="button"
-                          onClick={() => onExertionChange(option.value)}
+                          onClick={() => {
+                            resetAddedItems()
+                            onExertionChange(option.value)
+                          }}
                           className={cn(optionClass(exertion === option.value), 'w-full sm:w-auto')}
                         >
                           {option.label}
@@ -252,7 +525,10 @@ export function WearGuideCard({
                         <button
                           key={option.value}
                           type="button"
-                          onClick={() => onDurationChange(option.value)}
+                          onClick={() => {
+                            resetAddedItems()
+                            onDurationChange(option.value)
+                          }}
                           className={cn(optionClass(duration === option.value), 'w-full sm:w-auto')}
                         >
                           {option.label}
@@ -263,7 +539,6 @@ export function WearGuideCard({
                 </div>
               </div>
             </div>
-
           </div>
         )}
       </CardContent>
