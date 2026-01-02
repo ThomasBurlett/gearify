@@ -83,9 +83,7 @@ export function useInitialLocation({
         setLocation(defaultLocation)
         const codeLabel = code === null ? '' : ` (${code})`
         const contextHint =
-          typeof window !== 'undefined' && window.isSecureContext
-            ? ''
-            : ' (Not a secure context)'
+          typeof window !== 'undefined' && window.isSecureContext ? '' : ' (Not a secure context)'
         setGeoMessage(`Location error${codeLabel}: ${message}${contextHint}`)
       }
     }

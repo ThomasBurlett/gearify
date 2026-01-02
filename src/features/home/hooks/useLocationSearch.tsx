@@ -37,7 +37,7 @@ export function useLocationSearch({ location, formatLocationName }: UseLocationS
     if (!searchDirty.current) {
       setSearchQuery(formatLocationName(location))
     }
-  }, [location])
+  }, [location, formatLocationName])
 
   useEffect(() => {
     try {

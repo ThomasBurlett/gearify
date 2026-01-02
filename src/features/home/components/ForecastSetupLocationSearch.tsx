@@ -158,9 +158,11 @@ export function ForecastSetupLocationSearch({
                         </CommandItem>
                       )
                     })}
-                  {searchStatus === 'idle' && !searchQuery.trim() && recentLocations.length === 0 && (
-                    <CommandEmpty>Start typing to search for a location.</CommandEmpty>
-                  )}
+                  {searchStatus === 'idle' &&
+                    !searchQuery.trim() &&
+                    recentLocations.length === 0 && (
+                      <CommandEmpty>Start typing to search for a location.</CommandEmpty>
+                    )}
                   {searchStatus === 'idle' && hasSearched && searchResults.length === 0 && (
                     <CommandEmpty>No results found.</CommandEmpty>
                   )}

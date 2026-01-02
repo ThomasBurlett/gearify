@@ -86,9 +86,7 @@ export function HomeHeader({ onShare }: HomeHeaderProps) {
               <div className="rounded-2xl border border-ink-200/15 bg-ink-900/80 p-4">
                 <div className="flex items-center gap-2 text-ink-50">
                   <Compass className="h-4 w-4 text-tide-200" />
-                  <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">
-                    What you get
-                  </p>
+                  <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">What you get</p>
                 </div>
                 <p className="mt-2 text-sm text-ink-50/85">
                   A snapshot of temperature, wind, and precipitation at the hour you care about,
@@ -125,12 +123,7 @@ export function HomeHeader({ onShare }: HomeHeaderProps) {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant="glow"
-                size="sm"
-                onClick={handleShareClick}
-                ref={shareButtonRef}
-              >
+              <Button variant="glow" size="sm" onClick={handleShareClick} ref={shareButtonRef}>
                 Share link
                 <ArrowUpRight />
               </Button>

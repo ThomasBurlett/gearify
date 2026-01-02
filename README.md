@@ -17,13 +17,13 @@ clear layering guidance and a shareable forecast link.
 - Tailwind CSS + shadcn/ui (Radix primitives)
 - React Router
 - Vitest + Testing Library
-- ESLint + Prettier
+- Oxlint + Oxfmt
 
 ## Getting started
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 Geolocation works best on secure origins. For local dev:
@@ -34,15 +34,15 @@ Geolocation works best on secure origins. For local dev:
 ## Scripts
 
 ```bash
-npm run dev
-npm run build
-npm run preview
-npm run lint
-npm run lint:fix
-npm run format
-npm run format:write
-npm run test
-npm run test:run
+pnpm dev
+pnpm build
+pnpm preview
+pnpm lint
+pnpm lint:fix
+pnpm format
+pnpm format:write
+pnpm test
+pnpm test:run
 ```
 
 ## Project structure

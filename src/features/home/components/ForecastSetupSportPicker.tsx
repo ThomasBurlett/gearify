@@ -13,10 +13,7 @@ const SPORT_LABELS: Record<SportType, string> = {
   skiing: 'Skiing',
 }
 
-export function ForecastSetupSportPicker({
-  sport,
-  onSportChange,
-}: ForecastSetupSportPickerProps) {
+export function ForecastSetupSportPicker({ sport, onSportChange }: ForecastSetupSportPickerProps) {
   return (
     <div className="space-y-3">
       <Label>Sport</Label>
@@ -32,7 +29,11 @@ export function ForecastSetupSportPicker({
                 : 'border-ink-200/10 bg-ink-950/40 text-ink-100/70 hover:border-ink-200/30'
             }`}
           >
-            {value === 'running' ? <SunMedium className="h-4 w-4" /> : <Snowflake className="h-4 w-4" />}
+            {value === 'running' ? (
+              <SunMedium className="h-4 w-4" />
+            ) : (
+              <Snowflake className="h-4 w-4" />
+            )}
             {SPORT_LABELS[value]}
           </button>
         ))}

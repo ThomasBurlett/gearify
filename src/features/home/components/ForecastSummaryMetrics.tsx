@@ -78,9 +78,7 @@ export function ForecastSummaryMetrics({
           primary={`${Math.round(selectedHour.windSpeed)} mph`}
           primaryClassName="font-display text-3xl"
         >
-          <p className="text-sm text-ink-100/70">
-            Gusts {Math.round(selectedHour.windGusts)} mph
-          </p>
+          <p className="text-sm text-ink-100/70">Gusts {Math.round(selectedHour.windGusts)} mph</p>
         </ForecastMetricCard>
       </div>
 
@@ -90,9 +88,7 @@ export function ForecastSummaryMetrics({
           icon={Droplets}
           primary={`${Math.round(selectedHour.humidity)}%`}
         >
-          <p className="text-sm text-ink-100/70">
-            Dew point {Math.round(selectedHour.dewPoint)}F
-          </p>
+          <p className="text-sm text-ink-100/70">Dew point {Math.round(selectedHour.dewPoint)}F</p>
         </ForecastMetricCard>
 
         <ForecastMetricCard
