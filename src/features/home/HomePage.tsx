@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
-import { getGearSuggestions } from '@/lib/gear'
+import { getGearSuggestions, getWearPlan } from '@/lib/gear'
 import { toLocalHourInput, setHourForDate } from '@/lib/time'
 import { getCurrentPositionWithFallback, getGeolocationDetails } from '@/lib/geolocation'
 import {
@@ -22,6 +22,7 @@ import { PackListCard } from '@/features/home/components/PackListCard'
 import { WearGuideCard } from '@/features/home/components/WearGuideCard'
 import type { SelectedHour } from '@/features/home/types'
 import { useForecastData } from '@/features/home/hooks/useForecastData'
+import { useComfortProfileStorage } from '@/features/home/hooks/useComfortProfileStorage'
 import { useInitialLocation } from '@/features/home/hooks/useInitialLocation'
 import { useLocationSearch } from '@/features/home/hooks/useLocationSearch'
 import { useHomeStore } from '@/features/home/store/useHomeStore'
@@ -64,10 +65,17 @@ export default function HomePage() {
     setErrorMessage,
     geoMessage,
     setGeoMessage,
+    comfortProfile,
+    setComfortProfile,
+    exertion,
+    setExertion,
+    duration,
+    setDuration,
   } = useHomeStore()
   const [isLocating, setIsLocating] = useState(false)
   const lastUrlTime = useRef<string | null | undefined>(undefined)
 
+  useComfortProfileStorage(comfortProfile, setComfortProfile)
   useInitialLocation({
     searchParams,
     defaultLocation: DEFAULT_LOCATION,
@@ -160,8 +168,9 @@ export default function HomePage() {
     ? computeWindChill(selectedHour.temperature, selectedHour.windSpeed)
     : null
   const visibilityMiles = selectedHour ? selectedHour.visibility / 1609.34 : null
-  const gear = selectedHour
-    ? getGearSuggestions(sport, {
+  const wearContext = { exertion, duration }
+  const baseInputs = selectedHour
+    ? {
         temperature: selectedHour.temperature,
         feelsLike: selectedHour.feelsLike,
         windSpeed: selectedHour.windSpeed,
@@ -169,6 +178,23 @@ export default function HomePage() {
         precipitationProbability: selectedHour.precipitationChance,
         precipitation: selectedHour.precipitation,
         conditionLabel,
+        cloudCover: selectedHour.cloudCover,
+      }
+    : null
+  const gear = baseInputs
+    ? getGearSuggestions(sport, baseInputs, comfortProfile, wearContext)
+    : null
+  const colderWearPlan = baseInputs
+    ? getWearPlan(sport, baseInputs, comfortProfile, wearContext, {
+        temperature: baseInputs.temperature - 10,
+        feelsLike: baseInputs.feelsLike - 10,
+      })
+    : null
+  const wetterWearPlan = baseInputs
+    ? getWearPlan(sport, baseInputs, comfortProfile, wearContext, {
+        precipitationProbability: Math.max(baseInputs.precipitationProbability, 80),
+        precipitation: Math.max(baseInputs.precipitation, 0.15),
+        conditionLabel: baseInputs.conditionLabel.toLowerCase().includes('snow') ? 'Snow' : 'Rain',
       })
     : null
 
@@ -327,7 +353,19 @@ export default function HomePage() {
         </section>
 
         <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-          <WearGuideCard status={status} sport={sport} gear={gear} />
+          <WearGuideCard
+            status={status}
+            sport={sport}
+            wearPlan={gear?.wearPlan ?? null}
+            colderWearPlan={colderWearPlan}
+            wetterWearPlan={wetterWearPlan}
+            comfortProfile={comfortProfile}
+            onComfortProfileChange={setComfortProfile}
+            exertion={exertion}
+            onExertionChange={setExertion}
+            duration={duration}
+            onDurationChange={setDuration}
+          />
           <PackListCard status={status} gear={gear} />
         </section>
       </main>
