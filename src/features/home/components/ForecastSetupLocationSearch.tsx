@@ -1,12 +1,13 @@
 import { useRef } from 'react'
 import type React from 'react'
+import type { PopoverRootChangeEventDetails } from '@base-ui/react/popover'
 import { Loader2, MapPin, Navigation, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Command, CommandEmpty, CommandItem, CommandList } from '@/components/ui/command'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import type { LocationResult } from '@/lib/weather'
 import { formatElevationFeet } from '@/features/home/utils/formatters'
 
@@ -50,8 +51,21 @@ export function ForecastSetupLocationSearch({
   geoMessage,
 }: ForecastSetupLocationSearchProps) {
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const triggerRef = useRef<HTMLDivElement | null>(null)
 
-  const handleOpenChange = (open: boolean) => {
+  const handleOpenChange = (open: boolean, details?: PopoverRootChangeEventDetails) => {
+    const target = details?.event?.target as Node | null | undefined
+    if (!open && target && triggerRef.current?.contains(target)) {
+      return
+    }
+    if (
+      !open &&
+      (details?.reason === 'trigger-press' ||
+        details?.reason === 'trigger-focus' ||
+        details?.reason === 'focus-out')
+    ) {
+      return
+    }
     if (!open && document.activeElement === inputRef.current) {
       return
     }
@@ -69,37 +83,74 @@ export function ForecastSetupLocationSearch({
       <Label htmlFor="location-search">Location search</Label>
       <div className="flex flex-wrap gap-3">
         <Popover open={isSearchOpen} onOpenChange={handleOpenChange} modal={false}>
-          <PopoverAnchor asChild>
-            <div className="relative flex-1">
-              <MapPin className="pointer-events-none absolute left-3 top-3 h-5 w-5 text-ink-100/60" />
-              <Input
-                id="location-search"
-                ref={inputRef}
-                value={searchQuery}
-                onFocus={onSearchFocus}
-                onChange={(event) => onSearchQueryChange(event.target.value)}
-                onKeyDown={onSearchKeyDown}
-                placeholder="Try Eldora, Mt. Hood, Aspen, 80302..."
-                className="pl-10 pr-10"
-              />
-              {searchQuery.trim() ? (
-                <button
-                  type="button"
-                  aria-label="Clear location search"
-                  onClick={handleClear}
-                  className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center text-ink-100/70 transition hover:text-ink-50"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              ) : null}
-            </div>
-          </PopoverAnchor>
+          <PopoverTrigger
+            nativeButton={false}
+            render={(triggerProps) => {
+              const {
+                ref,
+                onFocus,
+                onBlur,
+                onClick,
+                onPointerDown,
+                onMouseDown,
+                onKeyDown,
+                onKeyUp,
+                role: _role,
+                tabIndex: _tabIndex,
+                ...rest
+              } = triggerProps
+              return (
+                <div ref={triggerRef} className="relative flex-1">
+                  <MapPin className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-ink-100/60" />
+                  <Input
+                    {...rest}
+                    id="location-search"
+                    ref={(node) => {
+                      inputRef.current = node
+                      if (typeof ref === 'function') {
+                        ref(node)
+                      } else if (ref && 'current' in ref) {
+                        ref.current = node
+                      }
+                    }}
+                    value={searchQuery}
+                    onFocus={(event) => {
+                      onFocus?.(event)
+                      onSearchFocus()
+                    }}
+                    onBlur={onBlur}
+                    onPointerDown={onPointerDown}
+                    onMouseDown={onMouseDown}
+                    onClick={onClick}
+                    onKeyDown={(event) => {
+                      onKeyDown?.(event)
+                      onSearchKeyDown(event)
+                    }}
+                    onKeyUp={onKeyUp}
+                    onChange={(event) => onSearchQueryChange(event.target.value)}
+                    placeholder="Try Eldora, Mt. Hood, Aspen, 80302..."
+                    className="h-11 pl-10 pr-10"
+                  />
+                  {searchQuery.trim() ? (
+                    <button
+                      type="button"
+                      aria-label="Clear location search"
+                      onClick={handleClear}
+                      className="absolute right-3 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center text-ink-100/70 transition hover:text-ink-50"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  ) : null}
+                </div>
+              )
+            }}
+          />
           {isSearchOpen && (
             <PopoverContent
-              className="w-[min(90vw,28rem)]"
+              className="w-[min(90vw,28rem)] border border-ink-200/10 bg-ink-950 text-ink-50"
               align="start"
-              onOpenAutoFocus={(event) => event.preventDefault()}
-              onCloseAutoFocus={(event) => event.preventDefault()}
+              initialFocus={false}
+              finalFocus={false}
             >
               <Command shouldFilter={false}>
                 <CommandList className="scrollbar-glow pr-1">
@@ -176,6 +227,7 @@ export function ForecastSetupLocationSearch({
           variant="outline"
           onClick={onUseCurrentLocation}
           disabled={isLocating}
+          className="h-11 px-4"
         >
           {isLocating ? <Loader2 className="animate-spin" /> : <Navigation />}
           {isLocating ? 'Locating...' : 'Current'}

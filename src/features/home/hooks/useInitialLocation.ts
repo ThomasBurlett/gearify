@@ -1,17 +1,18 @@
 import { useEffect, useRef } from 'react'
 import { getCurrentPositionWithFallback, getGeolocationDetails } from '@/lib/geolocation'
 import type { LocationResult } from '@/lib/weather'
+import type { HomeSearchParams } from '@/features/home/types'
 import { fetchIpLocation, fetchReverseGeocodingWithFallback } from '@/lib/weather'
 
 type UseInitialLocationArgs = {
-  searchParams: URLSearchParams
+  search: HomeSearchParams
   defaultLocation: LocationResult
   setLocation: (location: LocationResult | null) => void
   setGeoMessage: (message: string) => void
 }
 
 export function useInitialLocation({
-  searchParams,
+  search,
   defaultLocation,
   setLocation,
   setGeoMessage,
@@ -19,10 +20,10 @@ export function useInitialLocation({
   const requestedGeo = useRef(false)
 
   useEffect(() => {
-    const lat = searchParams.get('lat')
-    const lon = searchParams.get('lon')
-    const name = searchParams.get('name')
-    const elev = searchParams.get('elev')
+    const lat = search.lat
+    const lon = search.lon
+    const name = search.name
+    const elev = search.elev
     const parsedLat = lat ? Number(lat) : null
     const parsedLon = lon ? Number(lon) : null
     const parsedElevation = elev ? Number(elev) : null
@@ -89,5 +90,5 @@ export function useInitialLocation({
     }
 
     void resolveLocation()
-  }, [searchParams, defaultLocation, setGeoMessage, setLocation])
+  }, [search, defaultLocation, setGeoMessage, setLocation])
 }

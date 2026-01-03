@@ -102,6 +102,7 @@ export function PackListCard({
                     placeholder="Add an item to pack"
                     value={customValue}
                     onChange={(event) => setCustomValue(event.target.value)}
+                    className="h-11"
                     onKeyDown={(event) => {
                       if (event.key === 'Enter') {
                         event.preventDefault()
@@ -113,7 +114,7 @@ export function PackListCard({
                     <button
                       type="button"
                       onClick={handleAddItem}
-                      className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-tide-400 px-6 text-sm font-medium text-ink-950 transition hover:bg-tide-300"
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-tide-400 px-6 text-sm font-medium text-ink-950 transition hover:bg-tide-300"
                     >
                       Add
                     </button>
@@ -123,7 +124,7 @@ export function PackListCard({
                         setIsAddOpen(false)
                         setCustomValue('')
                       }}
-                      className="inline-flex h-11 items-center justify-center rounded-full px-4 text-sm font-medium text-ink-100/70 transition hover:bg-ink-900/50"
+                      className="inline-flex h-11 items-center justify-center rounded-lg px-4 text-sm font-medium text-ink-100/70 transition hover:bg-ink-900/50"
                     >
                       Done
                     </button>
@@ -133,7 +134,7 @@ export function PackListCard({
                 <button
                   type="button"
                   onClick={() => setIsAddOpen(true)}
-                  className="inline-flex h-10 items-center justify-center rounded-full border border-ink-200/20 px-4 text-xs uppercase tracking-[0.2em] text-ink-100/70 transition hover:border-tide-300/50 hover:text-ink-50"
+                  className="inline-flex h-10 items-center justify-center rounded-lg border border-ink-200/20 px-4 text-xs uppercase tracking-[0.2em] text-ink-100/70 transition hover:border-tide-300/50 hover:text-ink-50"
                 >
                   Add item
                 </button>
@@ -147,7 +148,7 @@ export function PackListCard({
                   <label
                     key={item}
                     className={cn(
-                      'flex items-center justify-between rounded-2xl border border-ink-200/10 bg-ink-950/40 px-4 py-3 text-sm text-ink-50 transition',
+                      'flex items-center justify-between rounded-lg border border-ink-200/10 bg-ink-950/40 px-4 py-3 text-sm text-ink-50 transition',
                       checked && 'border-tide-300/40 bg-ink-900/60 text-ink-100'
                     )}
                   >
@@ -160,7 +161,7 @@ export function PackListCard({
                       />
                       <span>{item}</span>
                       {!isCustom && (
-                        <span className="rounded-full border border-ink-200/20 px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-ink-100/70">
+                        <span className="rounded-lg border border-ink-200/20 px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-ink-100/70">
                           Suggested
                         </span>
                       )}
@@ -168,7 +169,7 @@ export function PackListCard({
                     <button
                       type="button"
                       onClick={() => handleRemoveItem(item)}
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-lg text-ink-100/60 transition hover:text-spice-200"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-lg text-ink-100/60 transition hover:text-spice-200"
                       aria-label={isCustom ? 'Remove custom item' : 'Remove item'}
                     >
                       x

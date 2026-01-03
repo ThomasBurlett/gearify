@@ -14,3 +14,11 @@ export type SelectedHour = {
 }
 
 export type LoadStatus = 'idle' | 'loading' | 'error'
+
+export type HomeSearchParams = {
+  lat?: string
+  lon?: string
+  name?: string
+  elev?: string
+  time?: string
+}

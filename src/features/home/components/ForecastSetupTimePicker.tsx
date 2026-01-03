@@ -31,7 +31,7 @@ export function ForecastSetupTimePicker({
           step={3600}
           value={selectedTime}
           onChange={(event) => onTimeChange(event.target.value)}
-          className="pr-12"
+          className="h-11 pr-12"
         />
         <button
           type="button"
@@ -41,7 +41,7 @@ export function ForecastSetupTimePicker({
             input?.showPicker?.()
             input?.focus()
           }}
-          className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full border border-ink-200/20 bg-ink-950/50 text-ink-50 transition hover:border-tide-300/60 hover:bg-ink-900/70"
+          className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg border border-ink-200/20 bg-ink-950/50 text-ink-50 transition hover:border-tide-300/60 hover:bg-ink-900/70"
         >
           <CalendarClock className="h-4 w-4 text-ink-50" />
         </button>
@@ -52,7 +52,7 @@ export function ForecastSetupTimePicker({
             key={preset.label}
             type="button"
             onClick={() => onPreset(preset.hour)}
-            className="rounded-full border border-ink-200/20 px-4 py-2 text-xs uppercase tracking-[0.2em] text-ink-100/70 transition hover:border-tide-300/50 hover:text-ink-50"
+            className="rounded-lg border border-ink-200/20 px-4 py-2 text-xs uppercase tracking-[0.2em] text-ink-100/70 transition hover:border-tide-300/50 hover:text-ink-50"
           >
             {preset.label}
           </button>

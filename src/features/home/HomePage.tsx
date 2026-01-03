@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate } from '@tanstack/react-router'
 
 import { WEAR_ITEM_CATALOG, getGearSuggestions, getWearPlan } from '@/lib/gear'
 import { toLocalHourInput, setHourForDate } from '@/lib/time'
@@ -20,17 +20,16 @@ import { ForecastSummaryCard } from '@/features/home/components/ForecastSummaryC
 import { HomeHeader } from '@/features/home/components/HomeHeader'
 import { HomeSidebar } from '@/features/home/components/HomeSidebar'
 import { PackListCard } from '@/features/home/components/PackListCard'
-import { SavedPlansPanel } from '@/features/home/components/SavedPlansPanel'
 import { WearGuideCard } from '@/features/home/components/WearGuideCard'
-import type { SelectedHour } from '@/features/home/types'
+import type { HomeSearchParams, SelectedHour } from '@/features/home/types'
 import { useForecastData } from '@/features/home/hooks/useForecastData'
 import { useComfortProfileStorage } from '@/features/home/hooks/useComfortProfileStorage'
 import { useInitialLocation } from '@/features/home/hooks/useInitialLocation'
 import { useLocationSearch } from '@/features/home/hooks/useLocationSearch'
 import { useSavedPlans } from '@/features/home/hooks/useSavedPlans'
+import { toast } from 'sonner'
 import { useHomeStore } from '@/features/home/store/useHomeStore'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
-import { Button } from '@/components/ui/button'
 
 const DEFAULT_LOCATION: LocationResult = {
   name: 'Sandy',
@@ -54,9 +53,12 @@ function isSameList(a: string[], b: string[]) {
   return a.length === b.length && a.every((item, index) => item === b[index])
 }
 
-export default function HomePage() {
-  const { sport: sportParam } = useParams()
-  const [searchParams] = useSearchParams()
+type HomePageProps = {
+  sportParam?: string
+  search?: HomeSearchParams
+}
+
+export default function HomePage({ sportParam, search = {} }: HomePageProps) {
   const navigate = useNavigate()
 
   const {
@@ -100,7 +102,7 @@ export default function HomePage() {
 
   useComfortProfileStorage(comfortProfile, setComfortProfile)
   useInitialLocation({
-    searchParams,
+    search,
     defaultLocation: DEFAULT_LOCATION,
     setLocation,
     setGeoMessage,
@@ -129,14 +131,38 @@ export default function HomePage() {
     recentLocations,
     pushRecentLocation,
   } = useLocationSearch({ location, formatLocationName })
-  const { plans, savePlan, deletePlan, toggleFavorite, updatePlan } = useSavedPlans()
+  const { plans, savePlan, updatePlan } = useSavedPlans()
   const activePlanName = useMemo(() => {
     if (!activePlanId) return null
     return plans.find((plan) => plan.id === activePlanId)?.name ?? null
   }, [activePlanId, plans])
+  const canSavePlan = Boolean(location && selectedTime)
+
+  const handleSavePlan = (name: string) => {
+    if (!location || !selectedTime) return
+    const saved = savePlan({
+      name,
+      location,
+      sport,
+      selectedTime,
+      checkedPackItems,
+      checkedWearItems,
+      customPackItems,
+      removedPackItems,
+      removedWearItems,
+      addedWearItems,
+    })
+    setActivePlanId(saved.id)
+    const planLabel = name.trim().length > 0 ? name.trim() : 'Untitled plan'
+    toast.success(`Saved: ${planLabel}`, {
+      description: `${formatLocationName(location)} - ${selectedTime} - ${
+        sport === 'skiing' ? 'Skiing' : 'Running'
+      }`,
+    })
+  }
 
   useEffect(() => {
-    const fromUrl = searchParams.get('time')
+    const fromUrl = search.time
     if (fromUrl === lastUrlTime.current) {
       return
     }
@@ -148,7 +174,7 @@ export default function HomePage() {
     if (!selectedTime) {
       setSelectedTime(toLocalHourInput(new Date()))
     }
-  }, [searchParams, selectedTime, setSelectedTime])
+  }, [search.time, selectedTime, setSelectedTime])
 
   useEffect(() => {
     const nextSport = parseSport(sportParam)
@@ -157,15 +183,18 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!location) return
-    const params = new URLSearchParams()
-    params.set('lat', location.latitude.toFixed(5))
-    params.set('lon', location.longitude.toFixed(5))
-    params.set('name', formatLocationName(location))
-    if (location.elevation !== undefined) {
-      params.set('elev', location.elevation.toFixed(0))
-    }
-    params.set('time', selectedTime)
-    navigate({ pathname: `/${sport}`, search: params.toString() }, { replace: true })
+    navigate({
+      to: '/$sport',
+      params: { sport },
+      search: {
+        lat: location.latitude.toFixed(5),
+        lon: location.longitude.toFixed(5),
+        name: formatLocationName(location),
+        elev: location.elevation !== undefined ? location.elevation.toFixed(0) : undefined,
+        time: selectedTime,
+      },
+      replace: true,
+    })
   }, [location, selectedTime, sport, navigate])
 
   const selectedHour: SelectedHour | null = useMemo(() => {
@@ -287,36 +316,6 @@ export default function HomePage() {
     pushRecentLocation(result)
   }
 
-  const handlePlanLoad = (plan: {
-    location: LocationResult
-    selectedTime: string
-    sport: SportType
-    checkedPackItems?: string[]
-    checkedWearItems?: string[]
-    customPackItems?: string[]
-    removedPackItems?: string[]
-    removedWearItems?: string[]
-    addedWearItems?: string[]
-    id?: string
-  }) => {
-    searchDirty.current = false
-    setSport(plan.sport)
-    setLocation(plan.location)
-    setSelectedTime(plan.selectedTime)
-    setCheckedPackItems(plan.checkedPackItems ?? [])
-    setCheckedWearItems(plan.checkedWearItems ?? [])
-    setCustomPackItems(plan.customPackItems ?? [])
-    setRemovedPackItems(plan.removedPackItems ?? [])
-    setRemovedWearItems(plan.removedWearItems ?? [])
-    setAddedWearItems(plan.addedWearItems ?? [])
-    if (plan.id) {
-      setActivePlanId(plan.id)
-    }
-    setSearchQuery(formatLocationName(plan.location))
-    setIsSearchOpen(false)
-    resetSearchState()
-  }
-
   useEffect(() => {
     if (!activePlanId || !location || !selectedTime) return
     updatePlan(activePlanId, {
@@ -428,7 +427,11 @@ export default function HomePage() {
         <HomeSidebar onShare={handleShare} />
         <SidebarInset className="bg-transparent">
           <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-col gap-8 px-6 pb-24 pt-8">
-            <HomeHeader activePlanName={activePlanName} />
+            <HomeHeader
+              activePlanName={activePlanName}
+              canSavePlan={canSavePlan}
+              onSavePlan={handleSavePlan}
+            />
 
             <main className="flex w-full flex-col gap-10">
               <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
@@ -491,49 +494,6 @@ export default function HomePage() {
                   elevation={location?.elevation ?? null}
                   errorMessage={errorMessage}
                 />
-              </section>
-
-              <section
-                id="saved-plans"
-                className="rounded-3xl border border-ink-200/10 bg-ink-950/20 p-6"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="font-display text-lg font-semibold text-ink-50">Saved plans</p>
-                    <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">
-                      Keep favorites close
-                    </p>
-                  </div>
-                  <Button asChild variant="outline" size="sm">
-                    <Link to="/plans">Open full page</Link>
-                  </Button>
-                </div>
-                <div className="mt-6">
-                  <SavedPlansPanel
-                    currentPlan={{
-                      location,
-                      sport,
-                      selectedTime,
-                      checkedPackItems,
-                      checkedWearItems,
-                      customPackItems,
-                      removedPackItems,
-                      removedWearItems,
-                      addedWearItems,
-                    }}
-                    plans={plans}
-                    activePlanId={activePlanId}
-                    onPlanLoad={handlePlanLoad}
-                    onSavePlan={(input) => {
-                      const saved = savePlan(input)
-                      setActivePlanId(saved.id)
-                    }}
-                    onToggleFavorite={toggleFavorite}
-                    onDeletePlan={deletePlan}
-                    layout="split"
-                    showFullPageLink={false}
-                  />
-                </div>
               </section>
 
               <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">

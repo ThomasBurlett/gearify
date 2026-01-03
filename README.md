@@ -14,8 +14,8 @@ clear layering guidance and a shareable forecast link.
 ## Stack
 
 - React + TypeScript + Vite
-- Tailwind CSS + shadcn/ui (Radix primitives)
-- React Router
+- Tailwind CSS + shadcn/ui (Base UI primitives)
+- TanStack Router (file-based routes)
 - Vitest + Testing Library
 - Oxlint + Oxfmt
 
@@ -58,6 +58,7 @@ src/
     ui/
   lib/
   pages/
+  routes/
 ```
 
 ## Notes

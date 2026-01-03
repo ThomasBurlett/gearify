@@ -1,5 +1,5 @@
 import { ArrowLeft } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
@@ -12,15 +12,6 @@ import type { SavedPlan } from '@/features/home/hooks/useSavedPlans'
 export default function PlansPage() {
   const navigate = useNavigate()
   const {
-    location,
-    sport,
-    selectedTime,
-    checkedPackItems,
-    checkedWearItems,
-    customPackItems,
-    removedPackItems,
-    removedWearItems,
-    addedWearItems,
     setLocation,
     setSport,
     setSelectedTime,
@@ -33,7 +24,7 @@ export default function PlansPage() {
     activePlanId,
     setActivePlanId,
   } = useHomeStore()
-  const { plans, savePlan, deletePlan, toggleFavorite } = useSavedPlans()
+  const { plans, deletePlan, toggleFavorite } = useSavedPlans()
 
   const handleShare = async () => {
     if (typeof window === 'undefined') return false
@@ -52,7 +43,7 @@ export default function PlansPage() {
         <HomeSidebar onShare={handleShare} />
         <SidebarInset className="bg-transparent">
           <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-col gap-8 px-6 pb-24 pt-8">
-            <header className="flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-ink-200/10 bg-ink-950/30 px-6 py-5">
+            <header className="flex flex-wrap items-center justify-between gap-6 rounded-lg border border-ink-200/10 bg-ink-950/30 px-6 py-5">
               <div>
                 <p className="font-display text-2xl font-semibold tracking-tight text-ink-50">
                   Saved plans
@@ -62,11 +53,9 @@ export default function PlansPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <Button asChild variant="outline" size="sm">
-                  <Link to="/">
-                    <ArrowLeft />
-                    Back to forecast
-                  </Link>
+                <Button variant="outline" size="sm" className="rounded-lg" render={<Link to="/" />}>
+                  <ArrowLeft />
+                  Back to forecast
                 </Button>
                 <SidebarTrigger className="md:hidden" />
               </div>
@@ -74,17 +63,6 @@ export default function PlansPage() {
 
             <main className="flex w-full flex-col gap-10">
               <SavedPlansPanel
-                currentPlan={{
-                  location,
-                  sport,
-                  selectedTime,
-                  checkedPackItems,
-                  checkedWearItems,
-                  customPackItems,
-                  removedPackItems,
-                  removedWearItems,
-                  addedWearItems,
-                }}
                 plans={plans}
                 activePlanId={activePlanId}
                 onPlanLoad={(plan: SavedPlan) => {
@@ -98,19 +76,20 @@ export default function PlansPage() {
                   setRemovedWearItems(plan.removedWearItems ?? [])
                   setAddedWearItems(plan.addedWearItems ?? [])
                   setActivePlanId(plan.id)
-                  const params = new URLSearchParams()
-                  params.set('lat', plan.location.latitude.toFixed(5))
-                  params.set('lon', plan.location.longitude.toFixed(5))
-                  params.set('name', plan.location.name)
-                  if (plan.location.elevation !== undefined) {
-                    params.set('elev', plan.location.elevation.toFixed(0))
-                  }
-                  params.set('time', plan.selectedTime)
-                  navigate(`/${plan.sport}?${params.toString()}`)
-                }}
-                onSavePlan={(input) => {
-                  const saved = savePlan(input)
-                  setActivePlanId(saved.id)
+                  navigate({
+                    to: '/$sport',
+                    params: { sport: plan.sport },
+                    search: {
+                      lat: plan.location.latitude.toFixed(5),
+                      lon: plan.location.longitude.toFixed(5),
+                      name: plan.location.name,
+                      elev:
+                        plan.location.elevation !== undefined
+                          ? plan.location.elevation.toFixed(0)
+                          : undefined,
+                      time: plan.selectedTime,
+                    },
+                  })
                 }}
                 onToggleFavorite={toggleFavorite}
                 onDeletePlan={deletePlan}

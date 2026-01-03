@@ -32,7 +32,7 @@ const precipitationOptions: Array<{ value: PrecipitationPreference; label: strin
 
 function optionClass(isSelected: boolean) {
   return cn(
-    'min-h-[40px] rounded-full border border-ink-200/20 px-4 py-2 text-xs uppercase tracking-[0.2em] transition',
+    'min-h-[40px] rounded-lg border border-ink-200/20 px-4 py-2 text-xs uppercase tracking-[0.2em] transition',
     isSelected
       ? 'border-tide-300/60 bg-ink-950/60 text-ink-50'
       : 'text-ink-100/70 hover:border-tide-300/50 hover:text-ink-50'

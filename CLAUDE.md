@@ -50,6 +50,7 @@ pnpm test:run      # Run tests once
 ### State Management
 
 The app uses Zustand for global state management. The main store is `useHomeStore` (src/features/home/store/useHomeStore.ts), which holds:
+
 - Current sport (running/skiing)
 - Selected location and time
 - Weather forecast data
@@ -81,6 +82,7 @@ src/
 ### Core Business Logic (src/lib/)
 
 **gear.ts**: The gear recommendation engine. Contains:
+
 - `getWearPlan()`: Main function that computes layering recommendations
 - Effective temperature calculation that adjusts for sport, exertion, duration, comfort profile, wind, precipitation, cloud cover
 - Temperature thresholds for different sports (running: 20/35/50/65°F, skiing: 10/25/40°F)
@@ -89,6 +91,7 @@ src/
 - `getGearSuggestions()`: Combines wear plan with pack list recommendations
 
 **weather.ts**: Weather data fetching and geocoding:
+
 - `fetchForecast()`: Gets hourly weather from Open-Meteo API
 - `fetchGeocoding()`: Searches locations using both Open-Meteo and Nominatim (OpenStreetMap), merges results
 - `fetchReverseGeocoding()`: Converts coordinates to location names
@@ -118,6 +121,7 @@ src/
 ### Component Patterns
 
 Components follow these patterns:
+
 - Use `useHomeStore` selectors to access only needed state
 - Custom hooks encapsulate complex logic (location search, forecast loading, saved plans)
 - UI components from shadcn/ui are in `components/ui/` and should not be edited directly (regenerate using shadcn CLI)
@@ -126,6 +130,7 @@ Components follow these patterns:
 ### Routing
 
 Routes defined in App.tsx:
+
 - `/`: Home page (defaults to running)
 - `/:sport`: Home page with sport parameter (running|skiing)
 - `/plans`: Saved plans view

@@ -1,14 +1,29 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
+import { createRouter, RouterProvider } from '@tanstack/react-router'
 
-import App from './App'
 import './index.css'
+import { routeTree } from './routeTree.gen'
+import NotFound from './pages/NotFound'
+
+if (typeof document !== 'undefined') {
+  document.documentElement.classList.add('dark')
+}
+
+const router = createRouter({
+  routeTree,
+  defaultPreload: 'intent',
+  defaultNotFoundComponent: NotFound,
+})
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router
+  }
+}
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <RouterProvider router={router} />
   </React.StrictMode>
 )

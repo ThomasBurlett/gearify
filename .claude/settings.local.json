@@ -5,7 +5,8 @@
       "WebSearch",
       "Bash(pnpm lint:*)",
       "Bash(pnpm build:*)",
-      "Bash(pnpm dev)"
+      "Bash(pnpm dev)",
+      "Bash(tree:*)"
     ]
   }
 }

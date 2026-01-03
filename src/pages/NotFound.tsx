@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
 
@@ -10,8 +10,8 @@ export default function NotFound() {
       <p className="text-ink-100/70">
         The link you followed does not exist yet. Head back to GearCast to build a new forecast kit.
       </p>
-      <Button asChild>
-        <Link to="/">Return home</Link>
+      <Button nativeButton={false} render={<Link to="/" />}>
+        Return home
       </Button>
     </div>
   )

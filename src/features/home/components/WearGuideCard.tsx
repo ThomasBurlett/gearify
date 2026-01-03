@@ -10,6 +10,7 @@ import {
   X,
 } from 'lucide-react'
 import { useMemo, useRef, useState, type ComponentType } from 'react'
+import type { PopoverRootChangeEventDetails } from '@base-ui/react/popover'
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,7 +18,7 @@ import { Command, CommandEmpty, CommandItem, CommandList } from '@/components/ui
 import { Skeleton } from '@/components/ui/skeleton'
 import { ComfortProfileControls } from '@/features/home/components/ComfortProfileControls'
 import { Input } from '@/components/ui/input'
-import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 import type { ComfortProfile, ExertionLevel, TripDuration, WearPlan } from '@/lib/gear'
 import { WEAR_ITEM_CATALOG } from '@/lib/gear'
@@ -65,7 +66,7 @@ type Scenario = 'now' | 'colder' | 'wetter'
 
 function optionClass(isSelected: boolean) {
   return cn(
-    'min-h-[40px] rounded-full border border-ink-200/20 px-4 py-2 text-xs uppercase tracking-[0.2em] transition disabled:pointer-events-none disabled:opacity-50',
+    'min-h-[40px] rounded-lg border border-ink-200/20 px-4 py-2 text-xs uppercase tracking-[0.2em] transition disabled:pointer-events-none disabled:opacity-50',
     isSelected
       ? 'border-tide-300/60 bg-ink-950/60 text-ink-50'
       : 'text-ink-100/70 hover:border-tide-300/50 hover:text-ink-50'
@@ -119,6 +120,7 @@ export function WearGuideCard({
   const [scenario, setScenario] = useState<Scenario>('now')
   const [isPickerOpen, setIsPickerOpen] = useState(false)
   const pickerInputRef = useRef<HTMLInputElement | null>(null)
+  const pickerTriggerRef = useRef<HTMLDivElement | null>(null)
 
   const activePlan = useMemo(() => {
     if (scenario === 'colder') return colderWearPlan
@@ -205,20 +207,23 @@ export function WearGuideCard({
     onCheckedWearItemsChange(checkedWearItems.filter((item) => !addedSet.has(item)))
   }
 
-  const handlePickerOpenChange = (open: boolean) => {
+  const handlePickerOpenChange = (open: boolean, details?: PopoverRootChangeEventDetails) => {
+    const target = details?.event?.target as Node | null | undefined
+    if (!open && target && pickerTriggerRef.current?.contains(target)) {
+      return
+    }
+    if (
+      !open &&
+      (details?.reason === 'trigger-press' ||
+        details?.reason === 'trigger-focus' ||
+        details?.reason === 'focus-out')
+    ) {
+      return
+    }
     if (!open && document.activeElement === pickerInputRef.current) {
       return
     }
     setIsPickerOpen(open)
-  }
-
-  const handlePickerInteractOutside = (event: Event) => {
-    const target = event.target as Node | null
-    if (target && pickerInputRef.current?.contains(target)) {
-      event.preventDefault()
-      return
-    }
-    setIsPickerOpen(false)
   }
 
   return (
@@ -242,7 +247,7 @@ export function WearGuideCard({
         ) : (
           <div className="space-y-6">
             <div className="space-y-4">
-              <div className="rounded-2xl border border-ink-200/10 bg-ink-950/40 p-4">
+              <div className="rounded-lg border border-ink-200/10 bg-ink-950/40 p-4">
                 <div>
                   <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">
                     {scenario === 'now'
@@ -254,49 +259,48 @@ export function WearGuideCard({
                 </div>
                 <div className="mt-4 space-y-4">
                   <Popover open={isPickerOpen} onOpenChange={handlePickerOpenChange} modal={false}>
-                    <PopoverAnchor asChild>
-                      <div className="relative">
-                        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-100/60" />
-                        <Input
-                          ref={pickerInputRef}
-                          placeholder="Search items to add"
-                          value={itemQuery}
-                          onFocus={() => setIsPickerOpen(true)}
-                          onChange={(event) => {
-                            setItemQuery(event.target.value)
-                            setIsPickerOpen(true)
+                    <PopoverTrigger
+                      nativeButton={false}
+                      render={<div ref={pickerTriggerRef} className="relative" />}
+                    >
+                      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-100/60" />
+                      <Input
+                        ref={pickerInputRef}
+                        placeholder="Search items to add"
+                        value={itemQuery}
+                        onFocus={() => setIsPickerOpen(true)}
+                        onChange={(event) => {
+                          setItemQuery(event.target.value)
+                          setIsPickerOpen(true)
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Escape') {
+                            setIsPickerOpen(false)
+                          }
+                        }}
+                        className="h-11 pl-9 pr-9"
+                      />
+                      {itemQuery.trim() ? (
+                        <button
+                          type="button"
+                          aria-label="Clear item search"
+                          onClick={() => {
+                            setItemQuery('')
+                            setIsPickerOpen(false)
+                            pickerInputRef.current?.focus()
                           }}
-                          onKeyDown={(event) => {
-                            if (event.key === 'Escape') {
-                              setIsPickerOpen(false)
-                            }
-                          }}
-                          className="h-11 pl-9 pr-9"
-                        />
-                        {itemQuery.trim() ? (
-                          <button
-                            type="button"
-                            aria-label="Clear item search"
-                            onClick={() => {
-                              setItemQuery('')
-                              setIsPickerOpen(false)
-                              pickerInputRef.current?.focus()
-                            }}
-                            className="absolute right-3 top-3 flex h-4 w-4 items-center justify-center text-ink-100/70 transition hover:text-ink-50"
-                          >
-                            <X className="h-3.5 w-3.5" />
-                          </button>
-                        ) : null}
-                      </div>
-                    </PopoverAnchor>
+                          className="absolute right-3 top-3 flex h-4 w-4 items-center justify-center text-ink-100/70 transition hover:text-ink-50"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      ) : null}
+                    </PopoverTrigger>
                     {isPickerOpen && (
                       <PopoverContent
-                        className="w-[min(90vw,22rem)]"
+                        className="w-[min(90vw,22rem)] border border-ink-200/10 bg-ink-950 text-ink-50"
                         align="start"
-                        onOpenAutoFocus={(event) => event.preventDefault()}
-                        onCloseAutoFocus={(event) => event.preventDefault()}
-                        onEscapeKeyDown={() => setIsPickerOpen(false)}
-                        onInteractOutside={handlePickerInteractOutside}
+                        initialFocus={false}
+                        finalFocus={false}
                       >
                         <Command shouldFilter={false}>
                           <CommandList className="max-h-56 pr-1">
@@ -324,7 +328,7 @@ export function WearGuideCard({
                                   >
                                     <span className="flex flex-1 items-center justify-between gap-3">
                                       <span>{isActive ? item : `Add ${item}`}</span>
-                                      <span className="rounded-full border border-ink-200/20 px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-ink-100/70">
+                                      <span className="rounded-lg border border-ink-200/20 px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-ink-100/70">
                                         {catalogByItem.get(item) ?? 'Gear'}
                                       </span>
                                     </span>
@@ -358,10 +362,10 @@ export function WearGuideCard({
                       return (
                         <div
                           key={section.key}
-                          className="rounded-2xl border border-ink-200/10 bg-ink-950/50 p-4"
+                          className="rounded-lg border border-ink-200/10 bg-ink-950/50 p-4"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-200/10 bg-ink-900/60">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-ink-200/10 bg-ink-900/60">
                               <Icon className={cn('h-4 w-4', section.accent)} />
                             </div>
                             <p className="text-xs uppercase tracking-[0.2em] text-ink-100/60">
@@ -374,7 +378,7 @@ export function WearGuideCard({
                                 <div
                                   key={item}
                                   className={cn(
-                                    'flex items-center gap-2 rounded-full border border-ink-200/15 bg-ink-900/60 px-3 py-1 text-xs text-ink-50 transition',
+                                    'flex items-center gap-2 rounded-lg border border-ink-200/15 bg-ink-900/60 px-3 py-1 text-xs text-ink-50 transition',
                                     checkedSet.has(item) &&
                                       'border-tide-300/40 bg-ink-900/70 text-ink-100'
                                   )}
@@ -405,7 +409,7 @@ export function WearGuideCard({
                               <div
                                 key={`optional-${item}`}
                                 className={cn(
-                                  'flex items-center gap-2 rounded-full border border-dashed border-ink-200/20 px-3 py-1 text-xs text-ink-100/70 transition',
+                                  'flex items-center gap-2 rounded-lg border border-dashed border-ink-200/20 px-3 py-1 text-xs text-ink-100/70 transition',
                                   checkedSet.has(item) && 'border-tide-300/40 text-ink-100'
                                 )}
                               >
@@ -437,7 +441,7 @@ export function WearGuideCard({
                     {activePlan.reasons.map((reason) => (
                       <span
                         key={reason}
-                        className="rounded-full border border-ink-200/20 bg-ink-900/60 px-3 py-1 text-xs uppercase tracking-[0.2em] text-ink-100/80"
+                        className="rounded-lg border border-ink-200/20 bg-ink-900/60 px-3 py-1 text-xs uppercase tracking-[0.2em] text-ink-100/80"
                       >
                         {reason}
                       </span>
@@ -446,7 +450,7 @@ export function WearGuideCard({
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-ink-200/10 bg-ink-950/40 p-4">
+              <div className="rounded-lg border border-ink-200/10 bg-ink-950/40 p-4">
                 <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">Tune this plan</p>
                 <p className="mt-2 text-sm text-ink-100/70">
                   Adjust comfort and effort to match how you actually feel outside.
