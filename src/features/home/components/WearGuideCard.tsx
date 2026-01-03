@@ -201,12 +201,6 @@ export function WearGuideCard({
     }
   }
 
-  const resetAddedItems = () => {
-    if (addedWearItems.length === 0) return
-    onAddedWearItemsChange([])
-    onCheckedWearItemsChange(checkedWearItems.filter((item) => !addedSet.has(item)))
-  }
-
   const hasEdits = addedWearItems.length > 0 || removedWearItems.length > 0
 
   const resetEdits = () => {
@@ -527,7 +521,7 @@ export function WearGuideCard({
                         type="button"
                         className={cn(optionClass(scenario === 'now'), 'w-full sm:w-auto')}
                         onClick={() => {
-                          resetAddedItems()
+                          resetEdits()
                           setScenario('now')
                         }}
                       >
@@ -537,7 +531,7 @@ export function WearGuideCard({
                         type="button"
                         className={cn(optionClass(scenario === 'colder'), 'w-full sm:w-auto')}
                         onClick={() => {
-                          resetAddedItems()
+                          resetEdits()
                           setScenario('colder')
                         }}
                         disabled={!colderWearPlan}
@@ -548,7 +542,7 @@ export function WearGuideCard({
                         type="button"
                         className={cn(optionClass(scenario === 'wetter'), 'w-full sm:w-auto')}
                         onClick={() => {
-                          resetAddedItems()
+                          resetEdits()
                           setScenario('wetter')
                         }}
                         disabled={!wetterWearPlan}
@@ -560,7 +554,7 @@ export function WearGuideCard({
                   <ComfortProfileControls
                     profile={comfortProfile}
                     onChange={(profile) => {
-                      resetAddedItems()
+                      resetEdits()
                       onComfortProfileChange(profile)
                     }}
                   />
@@ -574,7 +568,7 @@ export function WearGuideCard({
                           key={option.value}
                           type="button"
                           onClick={() => {
-                            resetAddedItems()
+                            resetEdits()
                             onExertionChange(option.value)
                           }}
                           className={cn(optionClass(exertion === option.value), 'w-full sm:w-auto')}
@@ -594,7 +588,7 @@ export function WearGuideCard({
                           key={option.value}
                           type="button"
                           onClick={() => {
-                            resetAddedItems()
+                            resetEdits()
                             onDurationChange(option.value)
                           }}
                           className={cn(optionClass(duration === option.value), 'w-full sm:w-auto')}
