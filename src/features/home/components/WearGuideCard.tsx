@@ -140,6 +140,7 @@ export function WearGuideCard({
     const coverage = activePlan.coverage
     const optional = activePlan.optionalCoverage
     return new Set([
+      ...activePlan.primary,
       ...coverage.feet,
       ...coverage.legs,
       ...coverage.torso,
@@ -148,6 +149,7 @@ export function WearGuideCard({
       ...coverage.head,
       ...coverage.eyes,
       ...Object.values(optional).flat(),
+      ...activePlan.optional,
     ])
   }, [activePlan])
 
@@ -343,69 +345,138 @@ export function WearGuideCard({
                       </PopoverContent>
                     )}
                   </Popover>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {coverageSections.map((section) => {
-                      const items = activePlan.coverage[section.key].filter(
-                        (item) => !removedWearItems.includes(item)
-                      )
-                      const optionalItems = (activePlan.optionalCoverage[section.key] ?? []).filter(
-                        (item) => !removedWearItems.includes(item)
-                      )
-                      const addedItems = addedWearItems.filter(
-                        (item) => catalogByItem.get(item) === section.key
-                      )
-                      const displayAddedItems = addedItems.filter(
-                        (item) => !items.includes(item) && !optionalItems.includes(item)
-                      )
-                      const displayItems = [...items, ...displayAddedItems]
-                      const Icon = section.icon
-                      return (
-                        <div
-                          key={section.key}
-                          className="rounded-lg border border-ink-200/10 bg-ink-950/50 p-4"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-ink-200/10 bg-ink-900/60">
-                              <Icon className={cn('h-4 w-4', section.accent)} />
-                            </div>
-                            <p className="text-xs uppercase tracking-[0.2em] text-ink-100/60">
-                              {section.label}
-                            </p>
-                          </div>
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            {displayItems.length ? (
-                              displayItems.map((item) => (
-                                <div
-                                  key={item}
-                                  className={cn(
-                                    'flex items-center gap-2 rounded-lg border border-ink-200/15 bg-ink-900/60 px-3 py-1 text-xs text-ink-50 transition',
-                                    checkedSet.has(item) &&
-                                      'border-tide-300/40 bg-ink-900/70 text-ink-100'
-                                  )}
+                  <div className="space-y-5">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs uppercase tracking-[0.3em] text-ink-100/70">
+                            Wear
+                          </p>
+                          <p className="text-sm text-ink-100/70">
+                            Core layers to keep you dialed in.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {activePlan.primary.filter((item) => !removedWearItems.includes(item))
+                          .length ? (
+                          activePlan.primary
+                            .filter((item) => !removedWearItems.includes(item))
+                            .map((item) => (
+                              <div
+                                key={`primary-${item}`}
+                                className={cn(
+                                  'flex items-center gap-2 rounded-lg border border-ink-200/15 bg-ink-900/60 px-3 py-1 text-xs text-ink-50 transition',
+                                  checkedSet.has(item) &&
+                                    'border-tide-300/40 bg-ink-900/70 text-ink-100'
+                                )}
+                              >
+                                <label className="flex cursor-pointer items-center gap-2">
+                                  <input
+                                    type="checkbox"
+                                    checked={checkedSet.has(item)}
+                                    onChange={() => handleToggleWearItem(item)}
+                                    className="h-3.5 w-3.5 rounded border-ink-200/30 bg-ink-950/60 text-tide-300 focus:ring-tide-300/60"
+                                  />
+                                  {item}
+                                </label>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveWearItem(item)}
+                                  className="ml-1 text-xs text-ink-100/60 transition hover:text-spice-200"
+                                  aria-label="Remove item"
                                 >
-                                  <label className="flex cursor-pointer items-center gap-2">
-                                    <input
-                                      type="checkbox"
-                                      checked={checkedSet.has(item)}
-                                      onChange={() => handleToggleWearItem(item)}
-                                      className="h-3.5 w-3.5 rounded border-ink-200/30 bg-ink-950/60 text-tide-300 focus:ring-tide-300/60"
-                                    />
-                                    {item}
-                                  </label>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleRemoveWearItem(item)}
-                                    className="ml-1 text-xs text-ink-100/60 transition hover:text-spice-200"
-                                    aria-label="Remove item"
-                                  >
-                                    x
-                                  </button>
+                                  x
+                                </button>
+                              </div>
+                            ))
+                        ) : (
+                          <span className="text-xs text-ink-100/50">None</span>
+                        )}
+                      </div>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {coverageSections.map((section) => {
+                          const items = activePlan.coverage[section.key].filter(
+                            (item) => !removedWearItems.includes(item)
+                          )
+                          const optionalItems = (
+                            activePlan.optionalCoverage[section.key] ?? []
+                          ).filter((item) => !removedWearItems.includes(item))
+                          const addedItems = addedWearItems.filter(
+                            (item) => catalogByItem.get(item) === section.key
+                          )
+                          const displayAddedItems = addedItems.filter(
+                            (item) => !items.includes(item) && !optionalItems.includes(item)
+                          )
+                          const displayItems = [...items, ...displayAddedItems]
+                          const Icon = section.icon
+                          return (
+                            <div
+                              key={section.key}
+                              className="rounded-lg border border-ink-200/10 bg-ink-950/50 p-4"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-ink-200/10 bg-ink-900/60">
+                                  <Icon className={cn('h-4 w-4', section.accent)} />
                                 </div>
-                              ))
-                            ) : (
-                              <span className="text-xs text-ink-100/50">None</span>
-                            )}
-                            {optionalItems.map((item) => (
+                                <p className="text-xs uppercase tracking-[0.2em] text-ink-100/60">
+                                  {section.label}
+                                </p>
+                              </div>
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                {displayItems.length ? (
+                                  displayItems.map((item) => (
+                                    <div
+                                      key={item}
+                                      className={cn(
+                                        'flex items-center gap-2 rounded-lg border border-ink-200/15 bg-ink-900/60 px-3 py-1 text-xs text-ink-50 transition',
+                                        checkedSet.has(item) &&
+                                          'border-tide-300/40 bg-ink-900/70 text-ink-100'
+                                      )}
+                                    >
+                                      <label className="flex cursor-pointer items-center gap-2">
+                                        <input
+                                          type="checkbox"
+                                          checked={checkedSet.has(item)}
+                                          onChange={() => handleToggleWearItem(item)}
+                                          className="h-3.5 w-3.5 rounded border-ink-200/30 bg-ink-950/60 text-tide-300 focus:ring-tide-300/60"
+                                        />
+                                        {item}
+                                      </label>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleRemoveWearItem(item)}
+                                        className="ml-1 text-xs text-ink-100/60 transition hover:text-spice-200"
+                                        aria-label="Remove item"
+                                      >
+                                        x
+                                      </button>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <span className="text-xs text-ink-100/50">None</span>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                    <div className="space-y-3 rounded-lg border border-ink-200/10 bg-ink-950/30 p-4">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">
+                          Optional / Pack
+                        </p>
+                        <p className="text-sm text-ink-100/50">
+                          Nice-to-have extras if conditions shift.
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {activePlan.optional.filter((item) => !removedWearItems.includes(item))
+                          .length ? (
+                          activePlan.optional
+                            .filter((item) => !removedWearItems.includes(item))
+                            .map((item) => (
                               <div
                                 key={`optional-${item}`}
                                 className={cn(
@@ -420,7 +491,7 @@ export function WearGuideCard({
                                     onChange={() => handleToggleWearItem(item)}
                                     className="h-3.5 w-3.5 rounded border-ink-200/30 bg-ink-950/60 text-tide-300 focus:ring-tide-300/60"
                                   />
-                                  Optional: {item}
+                                  {item}
                                 </label>
                                 <button
                                   type="button"
@@ -431,11 +502,68 @@ export function WearGuideCard({
                                   x
                                 </button>
                               </div>
-                            ))}
-                          </div>
-                        </div>
-                      )
-                    })}
+                            ))
+                        ) : (
+                          <span className="text-xs text-ink-100/50">None</span>
+                        )}
+                      </div>
+                      <div className="grid gap-3 md:grid-cols-2">
+                        {coverageSections.map((section) => {
+                          const optionalItems = (
+                            activePlan.optionalCoverage[section.key] ?? []
+                          ).filter((item) => !removedWearItems.includes(item))
+                          const Icon = section.icon
+                          return (
+                            <div
+                              key={`optional-${section.key}`}
+                              className="rounded-lg border border-ink-200/10 bg-ink-950/40 p-3"
+                            >
+                              <div className="flex items-center gap-2">
+                                <div className="flex h-7 w-7 items-center justify-center rounded-md border border-ink-200/10 bg-ink-900/50">
+                                  <Icon className={cn('h-3.5 w-3.5', section.accent)} />
+                                </div>
+                                <p className="text-[11px] uppercase tracking-[0.2em] text-ink-100/50">
+                                  {section.label}
+                                </p>
+                              </div>
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                {optionalItems.length ? (
+                                  optionalItems.map((item) => (
+                                    <div
+                                      key={`optional-${section.key}-${item}`}
+                                      className={cn(
+                                        'flex items-center gap-2 rounded-lg border border-dashed border-ink-200/20 px-3 py-1 text-xs text-ink-100/70 transition',
+                                        checkedSet.has(item) && 'border-tide-300/40 text-ink-100'
+                                      )}
+                                    >
+                                      <label className="flex cursor-pointer items-center gap-2">
+                                        <input
+                                          type="checkbox"
+                                          checked={checkedSet.has(item)}
+                                          onChange={() => handleToggleWearItem(item)}
+                                          className="h-3.5 w-3.5 rounded border-ink-200/30 bg-ink-950/60 text-tide-300 focus:ring-tide-300/60"
+                                        />
+                                        {item}
+                                      </label>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleRemoveWearItem(item)}
+                                        className="ml-1 text-xs text-ink-100/60 transition hover:text-spice-200"
+                                        aria-label="Remove item"
+                                      >
+                                        x
+                                      </button>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <span className="text-xs text-ink-100/40">None</span>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
                   </div>
                   <div className="mt-4 flex flex-wrap gap-2">
                     {activePlan.reasons.map((reason) => (
