@@ -76,14 +76,14 @@ export function HomeSidebar({ onShare }: HomeSidebarProps) {
             <div className="flex items-center gap-3 group-data-[collapsible=icon]:flex-col">
               <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-ink-100/90 ring-1 ring-ink-200/40 shadow-glow group-data-[collapsible=icon]:h-10 group-data-[collapsible=icon]:w-10">
                 <img
-                  src="/gearify-logo.svg"
-                  alt="Gearify logo"
+                  src="/gearcast-logo.svg"
+                  alt="GearCast logo"
                   className="h-8 w-8 group-data-[collapsible=icon]:h-6 group-data-[collapsible=icon]:w-6"
                 />
               </div>
               <div className="group-data-[collapsible=icon]:hidden">
                 <p className="font-display text-lg font-semibold tracking-tight text-ink-50">
-                  Gearify
+                  GearCast
                 </p>
                 <p className="text-[11px] uppercase tracking-[0.3em] text-ink-100/70">
                   Wear-ready forecasts
@@ -110,9 +110,9 @@ export function HomeSidebar({ onShare }: HomeSidebarProps) {
                     <DialogHeader>
                       <div className="flex items-center gap-3">
                         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ink-100/90 ring-1 ring-ink-200/40">
-                          <img src="/gearify-logo.svg" alt="Gearify logo" className="h-7 w-7" />
+                          <img src="/gearcast-logo.svg" alt="GearCast logo" className="h-7 w-7" />
                         </div>
-                        <DialogTitle>Gearify is your outdoor-ready briefing</DialogTitle>
+                        <DialogTitle>GearCast is your outdoor-ready briefing</DialogTitle>
                       </div>
                       <DialogDescription className="text-ink-50/90">
                         Dial in a location, time, and sport to get the exact conditions and the gear

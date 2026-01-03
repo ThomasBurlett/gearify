@@ -1,6 +1,6 @@
-# Gearify
+# GearCast
 
-Outdoorsy, weather‑aware outfit planning for running and skiing. Gearify turns live conditions into
+Outdoorsy, weather‑aware outfit planning for running and skiing. GearCast turns live conditions into
 clear layering guidance and a shareable forecast link.
 
 ## Highlights
@@ -62,5 +62,5 @@ src/
 
 ## Notes
 
-- Recents are saved in `localStorage` under `gearify.recentLocations`.
+- Recents are saved in `localStorage` under `gearcast.recentLocations`.
 - Weather data and geocoding are powered by Open‑Meteo (no API key required).

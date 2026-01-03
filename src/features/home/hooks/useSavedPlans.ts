@@ -18,7 +18,7 @@ export type SavedPlan = {
   addedWearItems: string[]
 }
 
-const STORAGE_KEY = 'gearify.savedPlans'
+const STORAGE_KEY = 'gearcast.savedPlans'
 
 function normalizePlans(value: unknown): SavedPlan[] {
   if (!Array.isArray(value)) return []

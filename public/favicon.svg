@@ -1,6 +1,22 @@
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <g stroke="#3EA884" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M10 50L26 22L38 38L44 30L54 50H10Z" />
-    <path d="M26 22L31 30L38 38" />
+  <!-- Dark background -->
+  <rect width="64" height="64" fill="#1A2332" rx="12" />
+
+  <!-- Simple cloud -->
+  <path d="M 16 28
+           C 16 24, 19 21, 23 21
+           C 24 17, 28 14, 34 14
+           C 40 14, 44 17, 45 21
+           C 49 21, 52 24, 52 28
+           C 52 32, 49 35, 45 35
+           L 23 35
+           C 19 35, 16 32, 16 28 Z"
+        fill="#5AA48F" />
+
+  <!-- Three bold layer lines -->
+  <g stroke="#3EA884" stroke-width="4" stroke-linecap="round">
+    <line x1="20" y1="42" x2="44" y2="42" />
+    <line x1="18" y1="48" x2="46" y2="48" />
+    <line x1="16" y1="54" x2="48" y2="54" />
   </g>
 </svg>

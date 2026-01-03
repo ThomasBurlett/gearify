@@ -17,7 +17,7 @@ type StoredLocation = {
   elevation?: number
 }
 
-const RECENT_STORAGE_KEY = 'gearify.recentLocations'
+const RECENT_STORAGE_KEY = 'gearcast.recentLocations'
 const MAX_RECENTS = 3
 
 export function useLocationSearch({ location, formatLocationName }: UseLocationSearchArgs) {
