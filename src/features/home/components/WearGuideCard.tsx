@@ -207,6 +207,16 @@ export function WearGuideCard({
     onCheckedWearItemsChange(checkedWearItems.filter((item) => !addedSet.has(item)))
   }
 
+  const hasEdits = addedWearItems.length > 0 || removedWearItems.length > 0
+
+  const resetEdits = () => {
+    if (!hasEdits) return
+    const editedItems = new Set([...addedWearItems, ...removedWearItems])
+    onAddedWearItemsChange([])
+    onRemovedWearItemsChange([])
+    onCheckedWearItemsChange(checkedWearItems.filter((item) => !editedItems.has(item)))
+  }
+
   const handlePickerOpenChange = (open: boolean, details?: PopoverRootChangeEventDetails) => {
     const target = details?.event?.target as Node | null | undefined
     if (!open && target && pickerTriggerRef.current?.contains(target)) {
@@ -343,6 +353,60 @@ export function WearGuideCard({
                       </PopoverContent>
                     )}
                   </Popover>
+                  <div className="rounded-lg border border-ink-200/10 bg-ink-950/40 p-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-xs uppercase tracking-[0.2em] text-ink-100/60">
+                        Wear edits
+                      </p>
+                      <button
+                        type="button"
+                        onClick={resetEdits}
+                        disabled={!hasEdits}
+                        className={cn(
+                          'rounded-lg border border-ink-200/20 px-3 py-1 text-xs uppercase tracking-[0.2em] text-ink-100/70 transition hover:border-tide-300/40 hover:text-ink-50',
+                          !hasEdits && 'cursor-not-allowed opacity-50 hover:border-ink-200/20'
+                        )}
+                      >
+                        Reset edits
+                      </button>
+                    </div>
+                    <div className="mt-3 space-y-3 text-xs text-ink-100/70">
+                      <div className="flex flex-wrap items-start gap-2">
+                        <span className="uppercase tracking-[0.2em] text-ink-100/60">Added</span>
+                        <div className="flex flex-1 flex-wrap gap-2">
+                          {addedWearItems.length ? (
+                            addedWearItems.map((item) => (
+                              <span
+                                key={`added-${item}`}
+                                className="rounded-lg border border-tide-300/30 bg-ink-900/70 px-2 py-0.5 text-[11px] uppercase tracking-[0.15em] text-ink-50"
+                              >
+                                {item}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-ink-100/50">None</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-start gap-2">
+                        <span className="uppercase tracking-[0.2em] text-ink-100/60">Removed</span>
+                        <div className="flex flex-1 flex-wrap gap-2">
+                          {removedWearItems.length ? (
+                            removedWearItems.map((item) => (
+                              <span
+                                key={`removed-${item}`}
+                                className="rounded-lg border border-spice-200/30 bg-ink-900/70 px-2 py-0.5 text-[11px] uppercase tracking-[0.15em] text-ink-50"
+                              >
+                                {item}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-ink-100/50">None</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <div className="grid gap-4 md:grid-cols-2">
                     {coverageSections.map((section) => {
                       const items = activePlan.coverage[section.key].filter(
