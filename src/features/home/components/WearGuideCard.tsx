@@ -258,6 +258,43 @@ export function WearGuideCard({
                   </p>
                 </div>
                 <div className="mt-4 space-y-4">
+                  <Card size="sm" className="border-ink-200/15 bg-ink-950/60">
+                    <CardContent className="space-y-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge variant="glow">Effective {activePlan.effectiveTemp}F</Badge>
+                        <Badge
+                          variant="outline"
+                          className="border-ink-200/30 text-ink-100/80"
+                        >
+                          Confidence: {activePlan.confidence}
+                        </Badge>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.2em] text-ink-100/60">
+                          Primary picks
+                        </p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {activePlan.primary.slice(0, 4).map((item) => (
+                            <Badge
+                              key={item}
+                              variant="secondary"
+                              className="bg-ink-900/70 text-ink-50"
+                            >
+                              {item}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-xs text-ink-100/70">
+                        Adjustments:{' '}
+                        {activePlan.adjustments.length
+                          ? activePlan.adjustments
+                              .map((adjustment) => adjustment.replace(/:\s*/, ' '))
+                              .join(', ')
+                          : 'No adjustments'}
+                      </p>
+                    </CardContent>
+                  </Card>
                   <Popover open={isPickerOpen} onOpenChange={handlePickerOpenChange} modal={false}>
                     <PopoverTrigger
                       nativeButton={false}
