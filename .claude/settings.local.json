@@ -6,7 +6,8 @@
       "Bash(pnpm lint:*)",
       "Bash(pnpm build:*)",
       "Bash(pnpm dev)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(pnpm format:write:*)"
     ]
   }
 }

@@ -1,4 +1,4 @@
-import { CalendarDays, Compass, Home, Info, Link2, Share2, Sparkles } from 'lucide-react'
+import { CalendarDays, Compass, Home, Info, Link2, Package2, Share2, Sparkles } from 'lucide-react'
 import type { MouseEvent } from 'react'
 import confetti from 'canvas-confetti'
 import { Link } from '@tanstack/react-router'
@@ -109,6 +109,15 @@ export function HomeSidebar({ onShare }: HomeSidebarProps) {
               >
                 <CalendarDays />
                 <span className="group-data-[collapsible=icon]:hidden">Saved plans</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                render={<Link to="/inventory" />}
+                className="group-data-[collapsible=icon]:justify-center"
+              >
+                <Package2 />
+                <span className="group-data-[collapsible=icon]:hidden">My Gear</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

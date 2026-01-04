@@ -264,10 +264,7 @@ export function WearGuideCard({
                     <CardContent className="space-y-3">
                       <div className="flex flex-wrap items-center gap-2">
                         <Badge variant="glow">Effective {activePlan.effectiveTemp}F</Badge>
-                        <Badge
-                          variant="outline"
-                          className="border-ink-200/30 text-ink-100/80"
-                        >
+                        <Badge variant="outline" className="border-ink-200/30 text-ink-100/80">
                           Confidence: {activePlan.confidence}
                         </Badge>
                       </div>
@@ -386,9 +383,7 @@ export function WearGuideCard({
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-xs uppercase tracking-[0.3em] text-ink-100/70">
-                            Wear
-                          </p>
+                          <p className="text-xs uppercase tracking-[0.3em] text-ink-100/70">Wear</p>
                           <p className="text-sm text-ink-100/70">
                             Core layers to keep you dialed in.
                           </p>
