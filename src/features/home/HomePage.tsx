@@ -94,6 +94,7 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
     setRemovedWearItems,
     addedWearItems,
     setAddedWearItems,
+    gearMappings,
     activePlanId,
     setActivePlanId,
   } = useHomeStore()
@@ -151,6 +152,7 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
       removedPackItems,
       removedWearItems,
       addedWearItems,
+      gearMappings,
     })
     setActivePlanId(saved.id)
     const planLabel = name.trim().length > 0 ? name.trim() : 'Untitled plan'
@@ -328,6 +330,7 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
       removedPackItems,
       removedWearItems,
       addedWearItems,
+      gearMappings,
     })
   }, [
     activePlanId,
@@ -340,6 +343,7 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
     removedPackItems,
     removedWearItems,
     addedWearItems,
+    gearMappings,
     updatePlan,
   ])
 

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 
 import type { LoadStatus } from '@/features/home/types'
+import type { GearMappings } from '@/features/inventory/types'
 import {
   DEFAULT_COMFORT_PROFILE,
   DEFAULT_WEAR_CONTEXT,
@@ -28,6 +29,7 @@ type HomeState = {
   removedPackItems: string[]
   removedWearItems: string[]
   addedWearItems: string[]
+  gearMappings: GearMappings
   setSport: (sport: SportType) => void
   setSelectedTime: (value: string) => void
   setLocation: (location: LocationResult | null) => void
@@ -45,6 +47,7 @@ type HomeState = {
   setRemovedPackItems: (items: string[] | ((prev: string[]) => string[])) => void
   setRemovedWearItems: (items: string[] | ((prev: string[]) => string[])) => void
   setAddedWearItems: (items: string[] | ((prev: string[]) => string[])) => void
+  setGearMappings: (mappings: GearMappings | ((prev: GearMappings) => GearMappings)) => void
 }
 
 export const useHomeStore = create<HomeState>((set) => ({
@@ -65,6 +68,7 @@ export const useHomeStore = create<HomeState>((set) => ({
   removedPackItems: [],
   removedWearItems: [],
   addedWearItems: [],
+  gearMappings: {},
   setSport: (sport) => set({ sport }),
   setSelectedTime: (selectedTime) => set({ selectedTime }),
   setLocation: (location) => set({ location }),
@@ -117,5 +121,10 @@ export const useHomeStore = create<HomeState>((set) => ({
         typeof addedWearItems === 'function'
           ? addedWearItems(state.addedWearItems)
           : addedWearItems,
+    })),
+  setGearMappings: (gearMappings) =>
+    set((state) => ({
+      gearMappings:
+        typeof gearMappings === 'function' ? gearMappings(state.gearMappings) : gearMappings,
     })),
 }))

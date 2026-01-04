@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import type { GearMappings } from '@/features/inventory/types'
 import type { LocationResult, SportType } from '@/lib/weather'
 
 export type SavedPlan = {
@@ -16,6 +17,7 @@ export type SavedPlan = {
   removedPackItems: string[]
   removedWearItems: string[]
   addedWearItems: string[]
+  gearMappings: GearMappings
 }
 
 const STORAGE_KEY = 'gearcast.savedPlans'
@@ -53,6 +55,10 @@ function normalizePlans(value: unknown): SavedPlan[] {
           ? plan.removedWearItems.map(String)
           : [],
         addedWearItems: Array.isArray(plan.addedWearItems) ? plan.addedWearItems.map(String) : [],
+        gearMappings:
+          plan.gearMappings && typeof plan.gearMappings === 'object'
+            ? (plan.gearMappings as GearMappings)
+            : {},
       } satisfies SavedPlan
     })
     .filter((plan): plan is SavedPlan => plan !== null)
@@ -108,6 +114,7 @@ export function useSavedPlans() {
       removedPackItems: string[]
       removedWearItems: string[]
       addedWearItems: string[]
+      gearMappings: GearMappings
     }) => {
       const id =
         typeof crypto !== 'undefined' && 'randomUUID' in crypto
@@ -129,6 +136,7 @@ export function useSavedPlans() {
         removedPackItems: input.removedPackItems,
         removedWearItems: input.removedWearItems,
         addedWearItems: input.addedWearItems,
+        gearMappings: input.gearMappings,
       }
       setPlans((prev) => sortPlans([next, ...prev]))
       return next
@@ -172,7 +180,8 @@ export function useSavedPlans() {
               JSON.stringify(next.customPackItems) === JSON.stringify(plan.customPackItems) &&
               JSON.stringify(next.removedPackItems) === JSON.stringify(plan.removedPackItems) &&
               JSON.stringify(next.removedWearItems) === JSON.stringify(plan.removedWearItems) &&
-              JSON.stringify(next.addedWearItems) === JSON.stringify(plan.addedWearItems)
+              JSON.stringify(next.addedWearItems) === JSON.stringify(plan.addedWearItems) &&
+              JSON.stringify(next.gearMappings) === JSON.stringify(plan.gearMappings)
             return same ? plan : next
           })
         )

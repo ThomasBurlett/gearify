@@ -21,6 +21,7 @@ export default function PlansPage() {
     setRemovedPackItems,
     setRemovedWearItems,
     setAddedWearItems,
+    setGearMappings,
     activePlanId,
     setActivePlanId,
   } = useHomeStore()
@@ -75,6 +76,7 @@ export default function PlansPage() {
                   setRemovedPackItems(plan.removedPackItems ?? [])
                   setRemovedWearItems(plan.removedWearItems ?? [])
                   setAddedWearItems(plan.addedWearItems ?? [])
+                  setGearMappings(plan.gearMappings ?? {})
                   setActivePlanId(plan.id)
                   navigate({
                     to: '/$sport',
