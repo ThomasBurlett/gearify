@@ -21,7 +21,11 @@ export default defineConfig({
             return undefined
           }
 
-          if (id.includes('react-dom') || id.includes('react/')) {
+          if (
+            id.includes('node_modules/react-dom/') ||
+            id.includes('node_modules/react/') ||
+            id.includes('node_modules/scheduler/')
+          ) {
             return 'react'
           }
 
