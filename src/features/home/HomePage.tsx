@@ -3,6 +3,7 @@ import { useNavigate } from '@tanstack/react-router'
 
 import { WEAR_ITEM_CATALOG, getGearSuggestions, getWearPlan } from '@/lib/gear'
 import { toLocalHourInput, setHourForDate } from '@/lib/time'
+import { debounce } from '@/lib/utils'
 import { getCurrentPositionWithFallback, getGeolocationDetails } from '@/lib/geolocation'
 import {
   computeHeatIndex,
@@ -30,6 +31,15 @@ import { useSavedPlans } from '@/features/home/hooks/useSavedPlans'
 import { toast } from 'sonner'
 import { useHomeStore } from '@/features/home/store/useHomeStore'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 
 const DEFAULT_LOCATION: LocationResult = {
   name: 'Sandy',
@@ -97,8 +107,13 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
     gearMappings,
     activePlanId,
     setActivePlanId,
+    saveStatus,
+    setSaveStatus,
+    lastSavedAt,
+    setLastSavedAt,
   } = useHomeStore()
   const [isLocating, setIsLocating] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const lastUrlTime = useRef<string | null | undefined>(undefined)
 
   useComfortProfileStorage(comfortProfile, setComfortProfile)
@@ -132,12 +147,56 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
     recentLocations,
     pushRecentLocation,
   } = useLocationSearch({ location, formatLocationName })
-  const { plans, savePlan, updatePlan } = useSavedPlans()
+  const { plans, savePlan, updatePlan, renamePlan, toggleFavorite, deletePlan } = useSavedPlans()
   const activePlanName = useMemo(() => {
     if (!activePlanId) return null
     return plans.find((plan) => plan.id === activePlanId)?.name ?? null
   }, [activePlanId, plans])
   const canSavePlan = Boolean(location && selectedTime)
+
+  // Debounced auto-save for active plans
+  const debouncedSave = useMemo(
+    () =>
+      debounce((planId: string) => {
+        if (!location || !selectedTime) return
+
+        setSaveStatus('saving')
+        try {
+          updatePlan(planId, {
+            location,
+            sport,
+            selectedTime,
+            checkedPackItems,
+            checkedWearItems,
+            customPackItems,
+            removedPackItems,
+            removedWearItems,
+            addedWearItems,
+            gearMappings,
+          })
+          setSaveStatus('saved')
+          setLastSavedAt(Date.now())
+        } catch (error) {
+          console.error('Failed to save plan:', error)
+          setSaveStatus('error')
+        }
+      }, 500),
+    [
+      location,
+      sport,
+      selectedTime,
+      checkedPackItems,
+      checkedWearItems,
+      customPackItems,
+      removedPackItems,
+      removedWearItems,
+      addedWearItems,
+      gearMappings,
+      updatePlan,
+      setSaveStatus,
+      setLastSavedAt,
+    ]
+  )
 
   const handleSavePlan = (name: string) => {
     if (!location || !selectedTime) return
@@ -162,6 +221,80 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
       }`,
     })
   }
+
+  const handleRenamePlan = (newName: string) => {
+    if (!activePlanId) return
+    const trimmed = newName.trim()
+    if (!trimmed) return
+
+    renamePlan(activePlanId, trimmed)
+    toast.success('Plan renamed', {
+      description: trimmed,
+    })
+  }
+
+  const handleDuplicatePlan = () => {
+    if (!activePlanId || !location || !selectedTime) return
+
+    const currentPlan = plans.find((p) => p.id === activePlanId)
+    if (!currentPlan) return
+
+    const duplicated = savePlan({
+      name: `${currentPlan.name} (copy)`,
+      location,
+      sport,
+      selectedTime,
+      checkedPackItems,
+      checkedWearItems,
+      customPackItems,
+      removedPackItems,
+      removedWearItems,
+      addedWearItems,
+      gearMappings,
+    })
+
+    setActivePlanId(duplicated.id)
+    toast.success('Plan duplicated', {
+      description: duplicated.name,
+    })
+  }
+
+  const handleNewPlan = () => {
+    setActivePlanId(null)
+    setSaveStatus('idle')
+    setLastSavedAt(null)
+    toast.info('New temporary plan started')
+  }
+
+  const handleDeletePlan = () => {
+    if (!activePlanId) return
+    setDeleteDialogOpen(true)
+  }
+
+  const confirmDelete = () => {
+    if (!activePlanId) return
+
+    deletePlan(activePlanId)
+    setActivePlanId(null)
+    setSaveStatus('idle')
+    setLastSavedAt(null)
+    setDeleteDialogOpen(false)
+    toast.success('Plan deleted')
+  }
+
+  const handleToggleFavorite = () => {
+    if (!activePlanId) return
+    toggleFavorite(activePlanId)
+
+    const currentPlan = plans.find((p) => p.id === activePlanId)
+    const isFav = currentPlan?.favorite
+    toast.success(isFav ? 'Removed from favorites' : 'Added to favorites')
+  }
+
+  const isFavorite = useMemo(() => {
+    if (!activePlanId) return false
+    return plans.find((p) => p.id === activePlanId)?.favorite ?? false
+  }, [activePlanId, plans])
 
   useEffect(() => {
     const fromUrl = search.time
@@ -318,34 +451,16 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
     pushRecentLocation(result)
   }
 
+  // Auto-save active plan with debouncing
   useEffect(() => {
     if (!activePlanId || !location || !selectedTime) return
-    updatePlan(activePlanId, {
-      location,
-      sport,
-      selectedTime,
-      checkedPackItems,
-      checkedWearItems,
-      customPackItems,
-      removedPackItems,
-      removedWearItems,
-      addedWearItems,
-      gearMappings,
-    })
-  }, [
-    activePlanId,
-    location,
-    sport,
-    selectedTime,
-    checkedPackItems,
-    checkedWearItems,
-    customPackItems,
-    removedPackItems,
-    removedWearItems,
-    addedWearItems,
-    gearMappings,
-    updatePlan,
-  ])
+
+    debouncedSave(activePlanId)
+
+    return () => {
+      debouncedSave.cancel()
+    }
+  }, [activePlanId, location, selectedTime, debouncedSave])
 
   const handleUseCurrentLocation = async () => {
     setStatus('loading')
@@ -432,9 +547,18 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
         <SidebarInset className="bg-transparent">
           <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-col gap-8 px-6 pb-24 pt-8">
             <HomeHeader
-              activePlanName={activePlanName}
               canSavePlan={canSavePlan}
               onSavePlan={handleSavePlan}
+              activePlanId={activePlanId}
+              activePlanName={activePlanName}
+              saveStatus={saveStatus}
+              lastSavedAt={lastSavedAt}
+              onRenamePlan={handleRenamePlan}
+              onDuplicatePlan={handleDuplicatePlan}
+              onNewPlan={handleNewPlan}
+              onDeletePlan={handleDeletePlan}
+              onToggleFavorite={handleToggleFavorite}
+              isFavorite={isFavorite}
             />
 
             <main className="flex w-full flex-col gap-10">
@@ -535,6 +659,27 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
           </div>
         </SidebarInset>
       </SidebarProvider>
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete plan?</DialogTitle>
+            <DialogDescription>
+              This will permanently delete &quot;{activePlanName}&quot;. This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

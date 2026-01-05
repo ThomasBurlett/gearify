@@ -11,6 +11,8 @@ import {
 } from '@/lib/gear'
 import type { LocationResult, SportType, WeatherData } from '@/lib/weather'
 
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
+
 type HomeState = {
   sport: SportType
   selectedTime: string
@@ -30,6 +32,8 @@ type HomeState = {
   removedWearItems: string[]
   addedWearItems: string[]
   gearMappings: GearMappings
+  saveStatus: SaveStatus
+  lastSavedAt: number | null
   setSport: (sport: SportType) => void
   setSelectedTime: (value: string) => void
   setLocation: (location: LocationResult | null) => void
@@ -48,6 +52,8 @@ type HomeState = {
   setRemovedWearItems: (items: string[] | ((prev: string[]) => string[])) => void
   setAddedWearItems: (items: string[] | ((prev: string[]) => string[])) => void
   setGearMappings: (mappings: GearMappings | ((prev: GearMappings) => GearMappings)) => void
+  setSaveStatus: (status: SaveStatus) => void
+  setLastSavedAt: (timestamp: number | null) => void
 }
 
 export const useHomeStore = create<HomeState>((set) => ({
@@ -69,6 +75,8 @@ export const useHomeStore = create<HomeState>((set) => ({
   removedWearItems: [],
   addedWearItems: [],
   gearMappings: {},
+  saveStatus: 'idle',
+  lastSavedAt: null,
   setSport: (sport) => set({ sport }),
   setSelectedTime: (selectedTime) => set({ selectedTime }),
   setLocation: (location) => set({ location }),
@@ -127,4 +135,6 @@ export const useHomeStore = create<HomeState>((set) => ({
       gearMappings:
         typeof gearMappings === 'function' ? gearMappings(state.gearMappings) : gearMappings,
     })),
+  setSaveStatus: (saveStatus) => set({ saveStatus }),
+  setLastSavedAt: (lastSavedAt) => set({ lastSavedAt }),
 }))
