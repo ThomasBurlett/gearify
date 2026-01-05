@@ -1,4 +1,3 @@
-import { Badge } from '@/components/ui/badge'
 import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatLocalDateTime } from '@/features/home/utils/formatters'
 import { getConditionIcon } from '@/features/home/utils/conditionIcons'
@@ -27,11 +26,10 @@ export function ForecastSummaryHeader({
 
   return (
     <CardHeader>
-      <Badge variant="warm">Forecast summary</Badge>
-      <CardTitle className="text-2xl">
+      <CardTitle className="text-3xl font-bold">
         {status === 'loading' ? (
           <span className="inline-flex items-center gap-2">
-            Updating location
+            Loading
             <span className="loading-ellipsis" aria-hidden="true">
               <span>.</span>
               <span>.</span>

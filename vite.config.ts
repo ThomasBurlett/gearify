@@ -13,6 +13,36 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) {
+            return undefined
+          }
+
+          if (id.includes('react-dom') || id.includes('react/')) {
+            return 'react'
+          }
+
+          if (id.includes('@tanstack')) {
+            return 'tanstack'
+          }
+
+          if (
+            id.includes('@base-ui') ||
+            id.includes('cmdk') ||
+            id.includes('lucide-react') ||
+            id.includes('sonner')
+          ) {
+            return 'ui'
+          }
+
+          return 'vendor'
+        },
+      },
+    },
+  },
   server: {
     https: {},
   },

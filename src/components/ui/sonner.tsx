@@ -22,8 +22,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       style={
         {
-          '--normal-bg': 'var(--popover)',
-          '--normal-text': 'var(--popover-foreground)',
+          '--normal-bg': 'rgba(12, 19, 21, 0.98)',
+          '--normal-text': '#f8fbff',
           '--normal-border': 'var(--border)',
           '--border-radius': 'var(--radius)',
         } as CSSProperties
@@ -31,6 +31,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast: 'cn-toast',
+          title: 'cn-toast-title',
+          description: 'cn-toast-description',
+          actionButton: 'cn-toast-action',
+          cancelButton: 'cn-toast-cancel',
+          closeButton: 'cn-toast-close',
+          icon: 'cn-toast-icon',
         },
       }}
       {...props}

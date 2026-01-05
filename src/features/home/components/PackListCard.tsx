@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -82,9 +81,8 @@ export function PackListCard({
   return (
     <Card>
       <CardHeader>
-        <Badge variant="warm">Pack list</Badge>
-        <CardTitle className="text-2xl">Items to bring</CardTitle>
-        <CardDescription>Check items off as you pack for your trip.</CardDescription>
+        <CardTitle className="text-3xl font-bold">What to pack</CardTitle>
+        <CardDescription>Check items off as you go.</CardDescription>
       </CardHeader>
       <CardContent>
         {status === 'loading' ? (

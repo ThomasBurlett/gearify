@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -107,11 +107,33 @@ export function GearItemForm({ open, onOpenChange, onSave, editItem }: GearItemF
     onOpenChange(false)
   }
 
+  const defaultCategory = WEAR_ITEM_CATALOG[0]?.item ?? ''
+
   // Get unique categories from catalog
   const categories = Array.from(new Set(WEAR_ITEM_CATALOG.map((entry) => entry.item))).sort()
+  const categoryItems = categories.map((cat) => ({ value: cat, label: cat }))
 
   // Get zones
   const zones: BodyZone[] = ['feet', 'legs', 'torso', 'hands', 'neckFace', 'head', 'eyes']
+  const zoneItems = zones.map((z) => ({ value: z, label: ZONE_LABELS[z] }))
+  const conditionItems = Object.entries(CONDITION_LABELS).map(([value, label]) => ({
+    value,
+    label,
+  }))
+  const warmthItems = Object.entries(WARMTH_LABELS).map(([value, label]) => ({
+    value,
+    label,
+  }))
+  const waterproofItems = Object.entries(WATERPROOF_LABELS).map(([value, label]) => ({
+    value,
+    label,
+  }))
+
+  useEffect(() => {
+    if (open && !editItem && !category && defaultCategory) {
+      setCategory(defaultCategory)
+    }
+  }, [open, editItem, category, defaultCategory])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -141,6 +163,7 @@ export function GearItemForm({ open, onOpenChange, onSave, editItem }: GearItemF
             <Select
               value={category}
               onValueChange={(value) => value && setCategory(value)}
+              items={categoryItems}
               required
             >
               <SelectTrigger id="category">
@@ -159,7 +182,12 @@ export function GearItemForm({ open, onOpenChange, onSave, editItem }: GearItemF
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="zone">Body Zone *</Label>
-              <Select value={zone} onValueChange={(value) => setZone(value as BodyZone)} required>
+              <Select
+                value={zone}
+                onValueChange={(value) => setZone(value as BodyZone)}
+                items={zoneItems}
+                required
+              >
                 <SelectTrigger id="zone">
                   <SelectValue />
                 </SelectTrigger>
@@ -178,6 +206,7 @@ export function GearItemForm({ open, onOpenChange, onSave, editItem }: GearItemF
               <Select
                 value={condition}
                 onValueChange={(value) => setCondition(value as GearCondition)}
+                items={conditionItems}
               >
                 <SelectTrigger id="condition">
                   <SelectValue />
@@ -199,6 +228,7 @@ export function GearItemForm({ open, onOpenChange, onSave, editItem }: GearItemF
               <Select
                 value={warmth.toString()}
                 onValueChange={(value) => setWarmth(Number(value) as WarmthRating)}
+                items={warmthItems}
               >
                 <SelectTrigger id="warmth">
                   <SelectValue />
@@ -218,6 +248,7 @@ export function GearItemForm({ open, onOpenChange, onSave, editItem }: GearItemF
               <Select
                 value={waterproof}
                 onValueChange={(value) => setWaterproof(value as WaterproofRating)}
+                items={waterproofItems}
               >
                 <SelectTrigger id="waterproof">
                   <SelectValue />

@@ -16,8 +16,7 @@ import {
   type LocationResult,
   type SportType,
 } from '@/lib/weather'
-import { ForecastSetupCard } from '@/features/home/components/ForecastSetupCard'
-import { ForecastSummaryCard } from '@/features/home/components/ForecastSummaryCard'
+import { ForecastCard } from '@/features/home/components/ForecastCard'
 import { HomeHeader } from '@/features/home/components/HomeHeader'
 import { HomeSidebar } from '@/features/home/components/HomeSidebar'
 import { PackListCard } from '@/features/home/components/PackListCard'
@@ -114,6 +113,7 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
   } = useHomeStore()
   const [isLocating, setIsLocating] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [scenario, setScenario] = useState<'now' | 'colder' | 'wetter'>('now')
   const lastUrlTime = useRef<string | null | undefined>(undefined)
 
   useComfortProfileStorage(comfortProfile, setComfortProfile)
@@ -442,6 +442,18 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
       })
     : null
 
+  const activePlan = useMemo(() => {
+    if (scenario === 'colder') return colderWearPlan
+    if (scenario === 'wetter') return wetterWearPlan
+    return gear?.wearPlan ?? null
+  }, [scenario, gear?.wearPlan, colderWearPlan, wetterWearPlan])
+
+  const resetAddedItems = () => {
+    if (addedWearItems.length === 0) return
+    setAddedWearItems([])
+    setCheckedWearItems(checkedWearItems.filter((item) => !addedWearItems.includes(item)))
+  }
+
   const handleLocationSelect = (result: LocationResult) => {
     searchDirty.current = false
     setLocation(result)
@@ -562,8 +574,8 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
             />
 
             <main className="flex w-full flex-col gap-10">
-              <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-                <ForecastSetupCard
+              <section>
+                <ForecastCard
                   searchQuery={searchQuery}
                   onSearchQueryChange={handleQueryChange}
                   onSearchFocus={handleSearchFocus}
@@ -607,12 +619,8 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
                     setSelectedTime(toLocalHourInput(setHourForDate(new Date(selectedTime), hour)))
                   }
                   presetHours={PRESET_HOURS}
-                />
-
-                <ForecastSummaryCard
                   status={status}
                   locationName={location ? formatLocationName(location) : 'Locating you...'}
-                  selectedTime={selectedTime}
                   conditionLabel={conditionLabel}
                   timezone={forecast?.timezone}
                   selectedHour={selectedHour}
@@ -621,28 +629,30 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
                   visibilityMiles={visibilityMiles}
                   elevation={location?.elevation ?? null}
                   errorMessage={errorMessage}
-                />
-              </section>
-
-              <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-                <WearGuideCard
-                  status={status}
-                  sport={sport}
-                  wearPlan={gear?.wearPlan ?? null}
-                  colderWearPlan={colderWearPlan}
-                  wetterWearPlan={wetterWearPlan}
-                  checkedWearItems={checkedWearItems}
-                  onCheckedWearItemsChange={setCheckedWearItems}
-                  removedWearItems={removedWearItems}
-                  onRemovedWearItemsChange={setRemovedWearItems}
-                  addedWearItems={addedWearItems}
-                  onAddedWearItemsChange={setAddedWearItems}
+                  scenario={scenario}
+                  onScenarioChange={setScenario}
                   comfortProfile={comfortProfile}
                   onComfortProfileChange={setComfortProfile}
                   exertion={exertion}
                   onExertionChange={setExertion}
                   duration={duration}
                   onDurationChange={setDuration}
+                  colderAvailable={!!colderWearPlan}
+                  wetterAvailable={!!wetterWearPlan}
+                  onResetAddedItems={resetAddedItems}
+                />
+              </section>
+
+              <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+                <WearGuideCard
+                  status={status}
+                  wearPlan={activePlan}
+                  checkedWearItems={checkedWearItems}
+                  onCheckedWearItemsChange={setCheckedWearItems}
+                  removedWearItems={removedWearItems}
+                  onRemovedWearItemsChange={setRemovedWearItems}
+                  addedWearItems={addedWearItems}
+                  onAddedWearItemsChange={setAddedWearItems}
                 />
                 <PackListCard
                   status={status}

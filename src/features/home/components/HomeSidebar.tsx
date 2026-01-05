@@ -1,4 +1,19 @@
-import { CalendarDays, Compass, Home, Info, Link2, Package2, Share2, Sparkles } from 'lucide-react'
+import {
+  CalendarClock,
+  CalendarDays,
+  CloudSun,
+  Compass,
+  Home,
+  Info,
+  Link2,
+  MapPin,
+  Mountain,
+  Package2,
+  Share2,
+  Sparkles,
+  ThermometerSun,
+  Wind,
+} from 'lucide-react'
 import type { MouseEvent } from 'react'
 import confetti from 'canvas-confetti'
 import { Link } from '@tanstack/react-router'
@@ -146,56 +161,179 @@ export function HomeSidebar({ onShare }: HomeSidebarProps) {
                     </SidebarMenuButton>
                   }
                 />
-                <DialogContent>
-                  <DialogHeader>
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ink-100/90 ring-1 ring-ink-200/40">
-                        <img src="/gearcast-logo.svg" alt="GearCast logo" className="h-7 w-7" />
+                <DialogContent className="scrollbar-glow max-h-[85vh] overflow-y-auto p-0 sm:max-w-4xl">
+                  <div className="grid">
+                    <section className="relative overflow-hidden border-b border-ink-200/10 px-6 py-7 sm:px-10 sm:py-9">
+                      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,rgba(90,164,143,0.35),transparent_55%),radial-gradient(circle_at_90%_0%,rgba(246,199,124,0.35),transparent_50%),radial-gradient(circle_at_60%_100%,rgba(90,122,163,0.35),transparent_55%)]" />
+                      <div className="pointer-events-none absolute -top-20 right-0 h-56 w-56 rounded-full bg-tide-200/20 blur-3xl" />
+                      <DialogHeader className="relative z-10 gap-4">
+                        <div className="flex flex-wrap items-center gap-4">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-ink-100/90 ring-1 ring-ink-200/40 shadow-glow">
+                            <img src="/gearcast-logo.svg" alt="GearCast logo" className="h-7 w-7" />
+                          </div>
+                          <div>
+                            <p className="text-xs uppercase tracking-[0.4em] text-ink-100/70">
+                              About GearCast
+                            </p>
+                            <DialogTitle className="font-display text-2xl sm:text-3xl">
+                              A wear-ready forecast for people who move outdoors.
+                            </DialogTitle>
+                          </div>
+                        </div>
+                        <DialogDescription className="max-w-2xl text-sm text-ink-50/90">
+                          GearCast blends hourly weather, comfort tuning, and your sport to deliver
+                          a clear, confident plan. Pick a location and time, and it returns what the
+                          conditions feel like and the layers and pack items that make sense.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="relative z-10 mt-6 grid gap-4 sm:grid-cols-3">
+                        {[
+                          {
+                            icon: Compass,
+                            title: 'Condition clarity',
+                            copy: 'Hour-by-hour readouts for temperature, wind, precipitation, and visibility.',
+                          },
+                          {
+                            icon: Sparkles,
+                            title: 'Smart layering',
+                            copy: 'Recommendations tuned to exertion, duration, and your comfort profile.',
+                          },
+                          {
+                            icon: Link2,
+                            title: 'Ready to share',
+                            copy: 'Shareable links keep the crew synced on timing and gear.',
+                          },
+                        ].map((item) => (
+                          <div
+                            key={item.title}
+                            className="rounded-2xl border border-ink-200/15 bg-ink-900/75 p-4 shadow-[0_18px_40px_rgba(6,10,12,0.35)]"
+                          >
+                            <div className="flex items-center gap-2 text-ink-50">
+                              <item.icon className="h-4 w-4 text-tide-200" />
+                              <p className="text-xs uppercase tracking-[0.3em] text-ink-100/70">
+                                {item.title}
+                              </p>
+                            </div>
+                            <p className="mt-2 text-sm text-ink-50/85">{item.copy}</p>
+                          </div>
+                        ))}
                       </div>
-                      <DialogTitle>GearCast is your outdoor-ready briefing</DialogTitle>
-                    </div>
-                    <DialogDescription className="text-ink-50/90">
-                      Dial in a location, time, and sport to get the exact conditions and the gear
-                      list you should bring.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="mt-6 grid gap-4">
-                    <div className="rounded-2xl border border-ink-200/15 bg-ink-900/80 p-4">
-                      <div className="flex items-center gap-2 text-ink-50">
-                        <Compass className="h-4 w-4 text-tide-200" />
+                    </section>
+
+                    <section className="grid gap-8 px-6 py-7 sm:px-10 sm:py-9">
+                      <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+                        <div className="rounded-3xl border border-ink-200/10 bg-ink-950/70 p-6">
+                          <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">
+                            Why it exists
+                          </p>
+                          <p className="mt-3 text-sm text-ink-50/85">
+                            Weather apps talk in broad terms. GearCast speaks the language of
+                            runners and skiers: wind chill vs. effort, precipitation vs. layering,
+                            and pack essentials you might forget when you are rushing out the door.
+                          </p>
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            <span className="rounded-full border border-ink-200/20 bg-ink-900/70 px-3 py-1 text-xs text-ink-50">
+                              Running
+                            </span>
+                            <span className="rounded-full border border-ink-200/20 bg-ink-900/70 px-3 py-1 text-xs text-ink-50">
+                              Skiing
+                            </span>
+                            <span className="rounded-full border border-ink-200/20 bg-ink-900/70 px-3 py-1 text-xs text-ink-50">
+                              Local-first plans
+                            </span>
+                          </div>
+                        </div>
+                        <div className="rounded-3xl border border-ink-200/10 bg-ink-950/70 p-6">
+                          <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">
+                            How it flows
+                          </p>
+                          <ul className="mt-4 grid gap-3 text-sm text-ink-50/85">
+                            <li className="flex gap-3">
+                              <MapPin className="mt-0.5 h-4 w-4 text-tide-200" />
+                              Choose a location or let GearCast find you.
+                            </li>
+                            <li className="flex gap-3">
+                              <CalendarClock className="mt-0.5 h-4 w-4 text-tide-200" />
+                              Pick the hour and sport, then set comfort + effort.
+                            </li>
+                            <li className="flex gap-3">
+                              <CloudSun className="mt-0.5 h-4 w-4 text-tide-200" />
+                              Review the conditions story and the scenario dial.
+                            </li>
+                            <li className="flex gap-3">
+                              <Package2 className="mt-0.5 h-4 w-4 text-tide-200" />
+                              Get a wear guide and pack list you can edit.
+                            </li>
+                            <li className="flex gap-3">
+                              <Share2 className="mt-0.5 h-4 w-4 text-tide-200" />
+                              Share a plan so everyone stays aligned.
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+
+                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        {[
+                          { icon: ThermometerSun, label: 'Temperature', copy: 'Feels-like heat.' },
+                          { icon: Wind, label: 'Wind + gusts', copy: 'Layering impact.' },
+                          { icon: CloudSun, label: 'Sky + precip', copy: 'Wet vs. dry signals.' },
+                          { icon: Mountain, label: 'Elevation', copy: 'True-to-trail context.' },
+                        ].map((item) => (
+                          <div
+                            key={item.label}
+                            className="rounded-2xl border border-ink-200/10 bg-ink-900/60 p-4"
+                          >
+                            <div className="flex items-center gap-2 text-ink-50">
+                              <item.icon className="h-4 w-4 text-tide-200" />
+                              <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">
+                                {item.label}
+                              </p>
+                            </div>
+                            <p className="mt-2 text-sm text-ink-50/80">{item.copy}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+                        <div className="rounded-3xl border border-ink-200/10 bg-ink-950/70 p-6">
+                          <div className="flex items-center gap-2 text-ink-50">
+                            <Info className="h-4 w-4 text-tide-200" />
+                            <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">
+                              Data sources
+                            </p>
+                          </div>
+                          <p className="mt-3 text-sm text-ink-50/85">
+                            Forecasts and geocoding come from Open-Meteo. We blend it with
+                            OpenStreetMap Nominatim for location search and ipapi for IP-based
+                            fallback.
+                          </p>
+                        </div>
+                        <div className="rounded-3xl border border-ink-200/10 bg-ink-950/70 p-6">
+                          <div className="flex items-center gap-2 text-ink-50">
+                            <Sparkles className="h-4 w-4 text-tide-200" />
+                            <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">
+                              Local-first comfort
+                            </p>
+                          </div>
+                          <p className="mt-3 text-sm text-ink-50/85">
+                            Your comfort profile, gear inventory, and saved plans live in your
+                            browser. GearCast uses that context to shape recommendations without
+                            needing an account.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="rounded-3xl border border-ink-200/10 bg-ink-900/70 p-5">
                         <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">
-                          What you get
+                          Good to know
+                        </p>
+                        <p className="mt-2 text-sm text-ink-50/85">
+                          Weather shifts quickly in the mountains. GearCast is a planning aid, not a
+                          safety guarantee. Always check conditions and bring what makes you feel
+                          confident.
                         </p>
                       </div>
-                      <p className="mt-2 text-sm text-ink-50/85">
-                        A snapshot of temperature, wind, and precipitation at the hour you care
-                        about, plus visibility and cloud cover to set expectations.
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-ink-200/15 bg-ink-900/80 p-4">
-                      <div className="flex items-center gap-2 text-ink-50">
-                        <Sparkles className="h-4 w-4 text-tide-200" />
-                        <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">
-                          Gear guidance
-                        </p>
-                      </div>
-                      <p className="mt-2 text-sm text-ink-50/85">
-                        Recommendations tuned for running or skiing so you know what to wear and
-                        what to pack without second guessing.
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-ink-200/15 bg-ink-900/80 p-4">
-                      <div className="flex items-center gap-2 text-ink-50">
-                        <Link2 className="h-4 w-4 text-tide-200" />
-                        <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">
-                          Built to share
-                        </p>
-                      </div>
-                      <p className="mt-2 text-sm text-ink-50/85">
-                        Share links keep the plan synced with your choices so your group stays
-                        aligned on timing and conditions.
-                      </p>
-                    </div>
+                    </section>
                   </div>
                 </DialogContent>
               </Dialog>

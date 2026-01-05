@@ -58,7 +58,11 @@ export default function PlansPage() {
                   <ArrowLeft />
                   Back to forecast
                 </Button>
-                <SidebarTrigger className="md:hidden" />
+                <SidebarTrigger
+                  className="md:hidden rounded-full border border-tide-300/40 bg-tide-500/15 text-tide-50 shadow-glow hover:bg-tide-500/25 hover:text-white"
+                  variant="outline"
+                  label="Plans & Gear"
+                />
               </div>
             </header>
 

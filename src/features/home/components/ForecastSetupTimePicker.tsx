@@ -1,7 +1,6 @@
 import { CalendarClock } from 'lucide-react'
 
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 
 export type PresetHour = {
   label: string
@@ -22,8 +21,7 @@ export function ForecastSetupTimePicker({
   presetHours,
 }: ForecastSetupTimePickerProps) {
   return (
-    <div className="space-y-3">
-      <Label htmlFor="forecast-time">Date + time</Label>
+    <div className="flex flex-col gap-2">
       <div className="relative">
         <Input
           id="forecast-time"
@@ -46,13 +44,13 @@ export function ForecastSetupTimePicker({
           <CalendarClock className="h-4 w-4 text-ink-50" />
         </button>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-3 gap-2">
         {presetHours.map((preset) => (
           <button
             key={preset.label}
             type="button"
             onClick={() => onPreset(preset.hour)}
-            className="rounded-lg border border-ink-200/20 px-4 py-2 text-xs uppercase tracking-[0.2em] text-ink-100/70 transition hover:border-tide-300/50 hover:text-ink-50"
+            className="rounded-lg border border-ink-200/20 px-2 py-2 text-xs text-ink-100/70 transition hover:border-tide-300/50 hover:text-ink-50"
           >
             {preset.label}
           </button>

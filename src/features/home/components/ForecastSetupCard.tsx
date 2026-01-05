@@ -1,4 +1,3 @@
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ForecastSetupLocationSearch } from '@/features/home/components/ForecastSetupLocationSearch'
 import { ForecastSetupSportPicker } from '@/features/home/components/ForecastSetupSportPicker'
@@ -62,42 +61,45 @@ export function ForecastSetupCard({
   return (
     <Card>
       <CardHeader>
-        <Badge variant="glow">Forecast setup</Badge>
-        <CardTitle className="text-2xl">Plan your gear with hour-level precision.</CardTitle>
+        <CardTitle className="text-3xl font-bold">Where & when?</CardTitle>
         <CardDescription>
-          Search mountains, trails, or resorts. We will keep the shareable link in sync with your
-          choices.
+          Search for any trail, mountain, or resort. We'll keep your link in sync.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <ForecastSetupLocationSearch
-          searchQuery={searchQuery}
-          onSearchQueryChange={onSearchQueryChange}
-          onSearchFocus={onSearchFocus}
-          onSearchKeyDown={onSearchKeyDown}
-          searchResults={searchResults}
-          searchStatus={searchStatus}
-          searchError={searchError}
-          hasSearched={hasSearched}
-          isSearchOpen={isSearchOpen}
-          onSearchOpenChange={onSearchOpenChange}
-          onLocationSelect={onLocationSelect}
-          selectedResultIndex={selectedResultIndex}
-          formatLocationName={formatLocationName}
-          recentLocations={recentLocations}
-          isLocating={isLocating}
-          onUseCurrentLocation={onUseCurrentLocation}
-          geoMessage={geoMessage}
-        />
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <ForecastSetupSportPicker sport={sport} onSportChange={onSportChange} />
-          <ForecastSetupTimePicker
-            selectedTime={selectedTime}
-            onTimeChange={onTimeChange}
-            onPreset={onPreset}
-            presetHours={presetHours}
+      <CardContent>
+        <div className="space-y-4">
+          {/* Location search - full width */}
+          <ForecastSetupLocationSearch
+            searchQuery={searchQuery}
+            onSearchQueryChange={onSearchQueryChange}
+            onSearchFocus={onSearchFocus}
+            onSearchKeyDown={onSearchKeyDown}
+            searchResults={searchResults}
+            searchStatus={searchStatus}
+            searchError={searchError}
+            hasSearched={hasSearched}
+            isSearchOpen={isSearchOpen}
+            onSearchOpenChange={onSearchOpenChange}
+            onLocationSelect={onLocationSelect}
+            selectedResultIndex={selectedResultIndex}
+            formatLocationName={formatLocationName}
+            recentLocations={recentLocations}
+            isLocating={isLocating}
+            onUseCurrentLocation={onUseCurrentLocation}
+            geoMessage={geoMessage}
           />
+
+          {/* Sport + Time - side by side */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <ForecastSetupSportPicker sport={sport} onSportChange={onSportChange} />
+
+            <ForecastSetupTimePicker
+              selectedTime={selectedTime}
+              onTimeChange={onTimeChange}
+              onPreset={onPreset}
+              presetHours={presetHours}
+            />
+          </div>
         </div>
       </CardContent>
     </Card>

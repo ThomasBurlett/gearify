@@ -48,7 +48,7 @@ function useSidebar() {
 }
 
 function SidebarProvider({
-  defaultOpen = true,
+  defaultOpen,
   open: openProp,
   onOpenChange: setOpenProp,
   className,
@@ -62,10 +62,15 @@ function SidebarProvider({
 }) {
   const isMobile = useIsMobile()
   const [openMobile, setOpenMobile] = React.useState(false)
+  const initialOpen = React.useMemo(() => {
+    if (defaultOpen !== undefined) return defaultOpen
+    if (typeof window === 'undefined') return true
+    return window.innerWidth >= 768
+  }, [defaultOpen])
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
-  const [_open, _setOpen] = React.useState(defaultOpen)
+  const [_open, _setOpen] = React.useState(initialOpen)
   const open = openProp ?? _open
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
@@ -152,7 +157,20 @@ function Sidebar({
   variant?: 'sidebar' | 'floating' | 'inset'
   collapsible?: 'offExamples' | 'icon' | 'none'
 }) {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  const { isMobile, state, openMobile, setOpenMobile, setOpen } = useSidebar()
+  const hoverTimeoutRef = React.useRef<number | null>(null)
+  const closeTimeoutRef = React.useRef<number | null>(null)
+
+  React.useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current !== null) {
+        window.clearTimeout(hoverTimeoutRef.current)
+      }
+      if (closeTimeoutRef.current !== null) {
+        window.clearTimeout(closeTimeoutRef.current)
+      }
+    }
+  }, [])
 
   if (collapsible === 'none') {
     return (
@@ -202,6 +220,27 @@ function Sidebar({
       data-variant={variant}
       data-side={side}
       data-slot="sidebar"
+      onMouseEnter={() => {
+        if (collapsible !== 'icon' || state !== 'collapsed') return
+        if (closeTimeoutRef.current !== null) {
+          window.clearTimeout(closeTimeoutRef.current)
+          closeTimeoutRef.current = null
+        }
+        hoverTimeoutRef.current = window.setTimeout(() => {
+          setOpen(true)
+        }, 400)
+      }}
+      onMouseLeave={() => {
+        if (collapsible !== 'icon') return
+        if (hoverTimeoutRef.current !== null) {
+          window.clearTimeout(hoverTimeoutRef.current)
+          hoverTimeoutRef.current = null
+        }
+        if (closeTimeoutRef.current !== null) {
+          window.clearTimeout(closeTimeoutRef.current)
+          closeTimeoutRef.current = null
+        }
+      }}
     >
       {/* This is what handles the sidebar gap on desktop */}
       <div
@@ -242,15 +281,28 @@ function Sidebar({
   )
 }
 
-function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
+type SidebarTriggerProps = React.ComponentProps<typeof Button> & {
+  label?: string
+}
+
+function SidebarTrigger({
+  className,
+  onClick,
+  label,
+  variant = 'ghost',
+  size,
+  ...props
+}: SidebarTriggerProps) {
   const { toggleSidebar } = useSidebar()
+  const resolvedSize = size ?? (label ? 'sm' : 'icon-sm')
 
   return (
     <Button
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
-      variant="ghost"
-      size="icon-sm"
+      variant={variant}
+      size={resolvedSize}
+      aria-label={label ? `Toggle sidebar (${label})` : 'Toggle sidebar'}
       className={cn(className)}
       onClick={(event) => {
         onClick?.(event)
@@ -258,8 +310,12 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       }}
       {...props}
     >
-      <PanelLeftIcon />
-      <span className="sr-only">Toggle Sidebar</span>
+      <PanelLeftIcon aria-hidden="true" />
+      {label ? (
+        <span className="text-xs font-semibold tracking-[0.08em]">{label}</span>
+      ) : (
+        <span className="sr-only">Toggle Sidebar</span>
+      )}
     </Button>
   )
 }

@@ -38,6 +38,11 @@ const ZONE_LABELS: Record<BodyZone | 'all', string> = {
   eyes: 'Eyes',
 }
 
+const ZONE_ITEMS = Object.entries(ZONE_LABELS).map(([value, label]) => ({
+  value,
+  label,
+}))
+
 const WARMTH_DOTS: Record<WarmthRating, string> = {
   1: '•',
   2: '••',
@@ -144,6 +149,7 @@ export function GearInventoryCard() {
             <Select
               value={filterZone}
               onValueChange={(value) => setFilterZone(value as BodyZone | 'all')}
+              items={ZONE_ITEMS}
             >
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue />
