@@ -9,7 +9,11 @@
       "Bash(tree:*)",
       "Bash(pnpm format:write:*)",
       "Bash(pnpm format:*)",
-      "Bash(timeout 15 pnpm dev:*)"
+      "Bash(timeout 15 pnpm dev:*)",
+      "Skill(frontend-design)",
+      "Bash(pnpm add:*)",
+      "Bash(npx playwright install:*)",
+      "Bash(node:*)"
     ]
   }
 }

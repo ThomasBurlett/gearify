@@ -44,12 +44,12 @@ export default function PlansPage() {
         <HomeSidebar onShare={handleShare} />
         <SidebarInset className="bg-transparent">
           <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-col gap-8 px-6 pb-24 pt-8">
-            <header className="flex flex-wrap items-center justify-between gap-6 rounded-lg border border-ink-200/10 bg-ink-950/30 px-6 py-5">
+            <header className="flex flex-wrap items-center justify-between gap-6 rounded-2xl border border-slate-700/50 bg-gradient-to-br from-slate-800/90 via-slate-800/80 to-slate-900/90 px-6 py-5 shadow-xl shadow-black/20 backdrop-blur-sm">
               <div>
-                <p className="font-display text-2xl font-semibold tracking-tight text-ink-50">
+                <p className="font-display text-2xl font-semibold tracking-tight text-slate-100">
                   Saved plans
                 </p>
-                <p className="text-xs uppercase tracking-[0.3em] text-ink-100/70">
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
                   Keep your favorites
                 </p>
               </div>
@@ -59,7 +59,7 @@ export default function PlansPage() {
                   Back to forecast
                 </Button>
                 <SidebarTrigger
-                  className="md:hidden rounded-full border border-tide-300/40 bg-tide-500/15 text-tide-50 shadow-glow hover:bg-tide-500/25 hover:text-white"
+                  className="md:hidden rounded-full border border-indigo-500/40 bg-indigo-500/15 text-indigo-200 shadow-lg shadow-indigo-500/20 hover:bg-indigo-500/25 hover:text-white"
                   variant="outline"
                   label="Plans & Gear"
                 />

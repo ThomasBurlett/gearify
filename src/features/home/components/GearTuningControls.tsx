@@ -33,10 +33,10 @@ type GearTuningControlsProps = {
 
 function optionClass(isSelected: boolean) {
   return cn(
-    'min-h-[40px] rounded-lg border border-ink-200/20 px-4 py-2 text-xs uppercase tracking-[0.2em] transition disabled:pointer-events-none disabled:opacity-50',
+    'min-h-[40px] rounded-lg border px-4 py-2 text-xs font-medium uppercase tracking-[0.15em] transition shadow-sm disabled:pointer-events-none disabled:opacity-40',
     isSelected
-      ? 'border-tide-300/60 bg-ink-950/60 text-ink-50'
-      : 'text-ink-100/70 hover:border-tide-300/50 hover:text-ink-50'
+      ? 'border-indigo-500/50 bg-indigo-900/40 text-indigo-300'
+      : 'border-slate-600/50 bg-slate-800/60 text-slate-300 hover:border-indigo-500/40 hover:bg-indigo-900/30'
   )
 }
 
@@ -67,7 +67,7 @@ export function GearTuningControls({
       <CardContent>
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.2em] text-ink-100/60">Scenario</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Scenario</p>
             <div className="grid gap-2 sm:flex sm:flex-wrap">
               <button
                 type="button"
@@ -96,7 +96,7 @@ export function GearTuningControls({
           </div>
 
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.2em] text-ink-100/60">Effort level</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Effort level</p>
             <div className="grid gap-2 sm:flex sm:flex-wrap">
               {exertionOptions.map((option) => (
                 <button
@@ -112,7 +112,7 @@ export function GearTuningControls({
           </div>
 
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.2em] text-ink-100/60">Trip length</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Trip length</p>
             <div className="grid gap-2 sm:flex sm:flex-wrap">
               {durationOptions.map((option) => (
                 <button

@@ -26,7 +26,7 @@ export function ForecastSummaryHeader({
 
   return (
     <CardHeader>
-      <CardTitle className="text-3xl font-bold">
+      <CardTitle className="font-display text-3xl font-semibold tracking-tight text-slate-100">
         {status === 'loading' ? (
           <span className="inline-flex items-center gap-2">
             Loading
@@ -42,10 +42,10 @@ export function ForecastSummaryHeader({
       </CardTitle>
       <CardDescription className={status === 'loading' ? 'opacity-0' : 'opacity-100'}>
         <span className="inline-flex flex-wrap items-center gap-3">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-spice-500/20 text-spice-100">
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500/30 to-pink-600/40 text-pink-300 shadow-sm border border-pink-500/30">
             <ConditionIcon className="h-5 w-5" aria-hidden="true" />
           </span>
-          <span>{description}</span>
+          <span className="text-slate-300">{description}</span>
         </span>
       </CardDescription>
     </CardHeader>

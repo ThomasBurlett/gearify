@@ -73,27 +73,27 @@ export function SavedPlansPanel({
           </Button>
         </div>
       )}
-      <div className="rounded-lg border border-ink-200/10 bg-ink-950/30 p-5">
-        <p className="text-xs uppercase tracking-[0.3em] text-ink-100/60">Saved plans</p>
+      <div className="rounded-lg border border-slate-700/50 bg-slate-800/60 p-5">
+        <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Saved plans</p>
         {orderedPlans.length === 0 ? (
-          <p className="mt-2 text-sm text-ink-100/70">No saved plans yet.</p>
+          <p className="mt-2 text-sm text-slate-500">No saved plans yet.</p>
         ) : (
           <div className="mt-4 grid gap-3">
             {orderedPlans.map((plan) => (
               <div
                 key={plan.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-ink-200/10 bg-ink-950/40 px-4 py-3"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-700/50 bg-slate-800/80 px-4 py-3"
               >
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-sm text-ink-50">{plan.name}</p>
+                    <p className="text-sm text-slate-100">{plan.name}</p>
                     {activePlanId === plan.id && (
-                      <span className="rounded-lg border border-tide-300/50 bg-tide-500/10 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-tide-100">
+                      <span className="rounded-lg border border-indigo-400/50 bg-indigo-500/20 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-indigo-200">
                         Active
                       </span>
                     )}
                   </div>
-                  <p className="mt-1 text-xs text-ink-100/70">
+                  <p className="mt-1 text-xs text-slate-500">
                     {formatLocationName(plan.location)} - {formatTimeLabel(plan.selectedTime)} -{' '}
                     {SPORT_LABELS[plan.sport]}
                   </p>
@@ -105,7 +105,7 @@ export function SavedPlansPanel({
                     onClick={() => onToggleFavorite(plan.id)}
                     className={cn(
                       'h-9 w-9 rounded-lg',
-                      plan.favorite ? 'text-spice-200' : 'text-ink-100/60'
+                      plan.favorite ? 'text-amber-300' : 'text-slate-400'
                     )}
                     aria-label={plan.favorite ? 'Unfavorite plan' : 'Favorite plan'}
                   >
@@ -124,7 +124,7 @@ export function SavedPlansPanel({
                     type="button"
                     variant="ghost"
                     onClick={() => setPendingDelete(plan)}
-                    className="h-9 w-9 rounded-lg text-ink-100/60"
+                    className="h-9 w-9 rounded-lg text-slate-400"
                     aria-label="Delete plan"
                   >
                     <Trash2 />

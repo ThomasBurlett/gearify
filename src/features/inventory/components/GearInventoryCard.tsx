@@ -138,7 +138,7 @@ export function GearInventoryCard() {
           {/* Search and Filter */}
           <div className="flex flex-col gap-2 sm:flex-row">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input
                 placeholder="Search by name, category, or notes..."
                 value={searchQuery}
@@ -165,19 +165,19 @@ export function GearInventoryCard() {
           </div>
 
           {/* Items count */}
-          <div className="text-sm text-ink-400">
+          <div className="text-sm text-slate-400">
             {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'}
             {searchQuery || filterZone !== 'all' ? ` (filtered from ${items.length})` : ''}
           </div>
 
           {/* Items List */}
           {filteredItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-ink-200/20 py-12 text-center">
-              <Package2 className="mb-4 h-12 w-12 text-ink-400" />
-              <h3 className="mb-2 text-lg font-medium text-ink-100">
+            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-slate-700/50 py-12 text-center">
+              <Package2 className="mb-4 h-12 w-12 text-slate-400" />
+              <h3 className="mb-2 text-lg font-medium text-slate-200">
                 {items.length === 0 ? 'No gear items yet' : 'No items match your filters'}
               </h3>
-              <p className="mb-4 text-sm text-ink-400">
+              <p className="mb-4 text-sm text-slate-400">
                 {items.length === 0
                   ? 'Start building your gear inventory by adding your first item.'
                   : 'Try adjusting your search or filter criteria.'}
@@ -194,16 +194,16 @@ export function GearInventoryCard() {
               {filteredItems.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-start gap-3 rounded-lg border border-ink-200/20 bg-ink-950/40 p-4 transition hover:border-tide-300/40"
+                  className="flex items-start gap-3 rounded-lg border border-slate-700/50 bg-slate-800/60 p-4 transition hover:border-indigo-500/40"
                 >
                   <div className="flex-1 space-y-1">
                     <div className="flex items-start justify-between gap-2">
-                      <h4 className="font-medium text-ink-50">{item.name}</h4>
+                      <h4 className="font-medium text-slate-100">{item.name}</h4>
                       <div className="flex gap-1">
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-ink-400 hover:text-ink-50"
+                          className="h-8 w-8 text-slate-400 hover:text-slate-100"
                           onClick={() => handleEditClick(item)}
                         >
                           <Pencil className="h-4 w-4" />
@@ -211,7 +211,7 @@ export function GearInventoryCard() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-ink-400 hover:text-spice-400"
+                          className="h-8 w-8 text-slate-400 hover:text-pink-400"
                           onClick={() => handleDeleteClick(item)}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -219,29 +219,29 @@ export function GearInventoryCard() {
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2 text-sm">
-                      <Badge variant="outline" className="text-tide-200">
+                      <Badge variant="outline" className="text-indigo-300">
                         {item.category}
                       </Badge>
-                      <Badge variant="outline" className="text-ink-300">
+                      <Badge variant="outline" className="text-slate-300">
                         {ZONE_LABELS[item.zone]}
                       </Badge>
-                      <span className="text-ink-400" title={`Warmth: ${item.warmth}/5`}>
+                      <span className="text-slate-400" title={`Warmth: ${item.warmth}/5`}>
                         {WARMTH_DOTS[item.warmth]}
                       </span>
-                      <span className="text-ink-400" title={`Waterproof: ${item.waterproof}`}>
+                      <span className="text-slate-400" title={`Waterproof: ${item.waterproof}`}>
                         {WATERPROOF_ICONS[item.waterproof]}
                       </span>
                       {item.weight && (
-                        <span className="text-ink-400" title="Weight">
+                        <span className="text-slate-400" title="Weight">
                           {item.weight}g
                         </span>
                       )}
-                      <span className="text-ink-400 capitalize" title="Condition">
+                      <span className="text-slate-400 capitalize" title="Condition">
                         {item.condition}
                       </span>
                     </div>
                     {item.notes && (
-                      <p className="text-sm text-ink-400 line-clamp-2">{item.notes}</p>
+                      <p className="text-sm text-slate-400 line-clamp-2">{item.notes}</p>
                     )}
                   </div>
                 </div>
@@ -271,7 +271,7 @@ export function GearInventoryCard() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete} className="bg-spice-500">
+            <AlertDialogAction onClick={handleConfirmDelete} className="bg-pink-500">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

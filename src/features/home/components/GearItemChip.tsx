@@ -26,12 +26,12 @@ export function GearItemChip({
   return (
     <div
       className={cn(
-        'flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs text-ink-50 transition',
+        'flex items-center gap-2 rounded-lg border px-3 py-2 text-xs text-slate-200 transition shadow-sm',
         optional
-          ? 'border-dashed border-ink-200/20 text-ink-100/70'
-          : 'border-ink-200/15 bg-ink-900/60',
-        checked && !optional && 'border-tide-300/40 bg-ink-900/70 text-ink-100',
-        checked && optional && 'border-tide-300/40 text-ink-100'
+          ? 'border-dashed border-slate-600/60 bg-slate-800/50 text-slate-400'
+          : 'border-slate-600/60 bg-slate-800/80',
+        checked && !optional && 'border-emerald-500/50 bg-emerald-900/30 text-emerald-300',
+        checked && optional && 'border-emerald-500/40 bg-emerald-900/20 text-emerald-400'
       )}
     >
       <label className="flex flex-1 cursor-pointer items-center gap-2">
@@ -39,12 +39,12 @@ export function GearItemChip({
           type="checkbox"
           checked={checked}
           onChange={() => onToggle(item)}
-          className="h-3.5 w-3.5 shrink-0 rounded border-ink-200/30 bg-ink-950/60 text-tide-300 focus:ring-tide-300/60"
+          className="h-3.5 w-3.5 shrink-0 rounded border-slate-500 bg-slate-700 text-emerald-500 focus:ring-emerald-500/40"
         />
         <span className="flex flex-1 flex-wrap items-center gap-1.5">
-          <span>{item}</span>
+          <span className="font-medium">{item}</span>
           {mappedGear && (
-            <Badge variant="outline" className="text-[10px] text-tide-200">
+            <Badge variant="outline" className="text-[10px] border-indigo-500/50 bg-indigo-900/40 text-indigo-300">
               → {mappedGear.name}
             </Badge>
           )}
@@ -57,7 +57,7 @@ export function GearItemChip({
                 e.preventDefault()
                 onMapGear(item)
               }}
-              className="h-5 px-1.5 text-[10px] text-ink-400 hover:text-tide-200"
+              className="h-5 px-1.5 text-[10px] text-slate-500 hover:text-indigo-400 hover:bg-indigo-900/30"
             >
               <Link2 className="mr-0.5 h-3 w-3" />
               Map
@@ -68,7 +68,7 @@ export function GearItemChip({
       <button
         type="button"
         onClick={() => onRemove(item)}
-        className="ml-1 shrink-0 text-xs text-ink-100/60 transition hover:text-spice-200"
+        className="ml-1 shrink-0 text-xs text-slate-500 transition hover:text-pink-400"
         aria-label="Remove item"
       >
         x

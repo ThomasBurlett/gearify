@@ -43,7 +43,7 @@ export function ForecastSummaryCard({
       />
       <CardContent>
         {status === 'error' && (
-          <div className="rounded-2xl border border-spice-400/40 bg-spice-500/10 p-4 text-sm text-spice-100">
+          <div className="rounded-xl border border-pink-500/40 bg-pink-900/30 p-4 text-sm text-pink-200">
             {errorMessage}
           </div>
         )}
@@ -73,7 +73,7 @@ export function ForecastSummaryCard({
             elevation={elevation}
           />
         ) : (
-          <div className="rounded-2xl border border-ink-200/10 bg-ink-950/40 p-4 text-sm text-ink-100/70">
+          <div className="rounded-xl border border-slate-700/50 bg-slate-800/40 p-4 text-sm text-slate-400">
             Select a date/time within the next 7 days to see details.
           </div>
         )}

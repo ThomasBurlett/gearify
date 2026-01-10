@@ -112,7 +112,7 @@ export function PackListCard({
                     <button
                       type="button"
                       onClick={handleAddItem}
-                      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-tide-400 px-6 text-sm font-medium text-ink-950 transition hover:bg-tide-300"
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-indigo-500 to-indigo-600 px-6 text-sm font-semibold text-white shadow-md shadow-indigo-500/30 transition hover:from-indigo-600 hover:to-indigo-700"
                     >
                       Add
                     </button>
@@ -122,7 +122,7 @@ export function PackListCard({
                         setIsAddOpen(false)
                         setCustomValue('')
                       }}
-                      className="inline-flex h-11 items-center justify-center rounded-lg px-4 text-sm font-medium text-ink-100/70 transition hover:bg-ink-900/50"
+                      className="inline-flex h-11 items-center justify-center rounded-lg px-4 text-sm font-medium text-slate-400 transition hover:bg-slate-700/50"
                     >
                       Done
                     </button>
@@ -132,7 +132,7 @@ export function PackListCard({
                 <button
                   type="button"
                   onClick={() => setIsAddOpen(true)}
-                  className="inline-flex h-10 items-center justify-center rounded-lg border border-ink-200/20 px-4 text-xs uppercase tracking-[0.2em] text-ink-100/70 transition hover:border-tide-300/50 hover:text-ink-50"
+                  className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-600/50 bg-slate-800/60 px-4 text-xs font-medium uppercase tracking-[0.15em] text-slate-300 shadow-sm transition hover:border-indigo-500/40 hover:bg-indigo-900/30"
                 >
                   Add item
                 </button>
@@ -146,8 +146,8 @@ export function PackListCard({
                   <label
                     key={item}
                     className={cn(
-                      'flex items-center justify-between rounded-lg border border-ink-200/10 bg-ink-950/40 px-4 py-3 text-sm text-ink-50 transition',
-                      checked && 'border-tide-300/40 bg-ink-900/60 text-ink-100'
+                      'flex items-center justify-between rounded-xl border border-slate-700/50 bg-slate-800/60 px-4 py-3 text-sm text-slate-200 shadow-sm transition',
+                      checked && 'border-emerald-500/50 bg-emerald-900/30 text-emerald-300'
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -155,11 +155,11 @@ export function PackListCard({
                         type="checkbox"
                         checked={checked}
                         onChange={() => handleToggleItem(item)}
-                        className="h-4 w-4 rounded border-ink-200/30 bg-ink-950/60 text-tide-300 focus:ring-tide-300/60"
+                        className="h-4 w-4 rounded border-slate-500 bg-slate-700 text-emerald-500 focus:ring-emerald-500/40"
                       />
-                      <span>{item}</span>
+                      <span className="font-medium">{item}</span>
                       {!isCustom && (
-                        <span className="rounded-lg border border-ink-200/20 px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-ink-100/70">
+                        <span className="rounded-md bg-slate-700/60 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.15em] text-slate-400">
                           Suggested
                         </span>
                       )}
@@ -167,7 +167,7 @@ export function PackListCard({
                     <button
                       type="button"
                       onClick={() => handleRemoveItem(item)}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-lg text-ink-100/60 transition hover:text-spice-200"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-lg text-slate-500 transition hover:text-pink-400"
                       aria-label={isCustom ? 'Remove custom item' : 'Remove item'}
                     >
                       x
@@ -178,7 +178,7 @@ export function PackListCard({
             </div>
           </div>
         ) : (
-          <p className="text-sm text-ink-100/70">Pack list will appear with your forecast.</p>
+          <p className="text-sm text-slate-400">Pack list will appear with your forecast.</p>
         )}
       </CardContent>
     </Card>

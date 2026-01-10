@@ -17,6 +17,8 @@
   "dependencies": {
     "@base-ui/react": "^1.0.0",
     "@fontsource-variable/figtree": "^5.2.10",
+    "@fontsource-variable/fraunces": "^5.2.9",
+    "@fontsource-variable/plus-jakarta-sans": "^5.2.8",
     "@tanstack/react-router": "^1.0.0",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
@@ -46,6 +48,7 @@
     "oxfmt": "^0.21.0",
     "oxlint": "^1.36.0",
     "oxlint-tsgolint": "^0.10.1",
+    "playwright": "^1.57.0",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",

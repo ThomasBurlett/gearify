@@ -43,13 +43,13 @@ const coverageSections: Array<{
   icon: ComponentType<{ className?: string }>
   accent: string
 }> = [
-  { key: 'feet', label: 'Feet', icon: Footprints, accent: 'text-tide-200' },
-  { key: 'legs', label: 'Legs', icon: PersonStanding, accent: 'text-ink-100' },
-  { key: 'torso', label: 'Torso', icon: Shirt, accent: 'text-tide-200' },
-  { key: 'hands', label: 'Hands', icon: Hand, accent: 'text-spice-200' },
-  { key: 'neckFace', label: 'Neck + face', icon: VenetianMask, accent: 'text-spice-200' },
-  { key: 'head', label: 'Head', icon: HatGlasses, accent: 'text-tide-200' },
-  { key: 'eyes', label: 'Eyes', icon: RectangleGoggles, accent: 'text-ink-100' },
+  { key: 'feet', label: 'Feet', icon: Footprints, accent: 'text-indigo-400' },
+  { key: 'legs', label: 'Legs', icon: PersonStanding, accent: 'text-slate-400' },
+  { key: 'torso', label: 'Torso', icon: Shirt, accent: 'text-indigo-400' },
+  { key: 'hands', label: 'Hands', icon: Hand, accent: 'text-pink-400' },
+  { key: 'neckFace', label: 'Neck + face', icon: VenetianMask, accent: 'text-pink-400' },
+  { key: 'head', label: 'Head', icon: HatGlasses, accent: 'text-emerald-400' },
+  { key: 'eyes', label: 'Eyes', icon: RectangleGoggles, accent: 'text-slate-400' },
 ]
 
 type WearGuideCardProps = {
@@ -206,13 +206,13 @@ export function WearGuideCard({
               <Skeleton className="h-32" />
             </div>
           ) : !wearPlan ? (
-            <p className="text-sm text-ink-100/70">Select a location and time to see gear.</p>
+            <p className="text-sm text-slate-400">Select a location and time to see gear.</p>
           ) : (
             <div className="space-y-8">
               {/* Summary badges */}
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="glow">Effective {wearPlan.effectiveTemp}F</Badge>
-                <Badge variant="outline" className="border-ink-200/30 text-ink-100/80">
+                <Badge variant="outline" className="border-slate-600/50 text-slate-300">
                   Confidence: {wearPlan.confidence}
                 </Badge>
               </div>
@@ -220,10 +220,10 @@ export function WearGuideCard({
               {/* Primary picks section */}
               <div className="space-y-3">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-ink-100/70">
+                  <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
                     Primary picks
                   </p>
-                  <p className="mt-1 text-sm text-ink-100/50">
+                  <p className="mt-1 text-sm text-slate-500">
                     Adjustments:{' '}
                     {wearPlan.adjustments.length
                       ? wearPlan.adjustments
@@ -250,7 +250,7 @@ export function WearGuideCard({
                         />
                       ))
                   ) : (
-                    <span className="text-xs text-ink-100/50">None</span>
+                    <span className="text-xs text-slate-500">None</span>
                   )}
                 </div>
               </div>
@@ -295,7 +295,7 @@ export function WearGuideCard({
                 </PopoverTrigger>
                 {isPickerOpen && (
                   <PopoverContent
-                    className="w-[min(90vw,22rem)] border border-ink-200/10 bg-ink-950 text-ink-50"
+                    className="w-[min(90vw,22rem)] border border-slate-700/50 bg-slate-800 text-slate-100 shadow-elevation"
                     align="start"
                     initialFocus={false}
                     finalFocus={false}
@@ -321,12 +321,12 @@ export function WearGuideCard({
                                 className={
                                   isActive
                                     ? 'cursor-not-allowed opacity-50'
-                                    : 'hover:border-tide-300/50 hover:bg-ink-950/60'
+                                    : 'hover:bg-slate-700/50'
                                 }
                               >
                                 <span className="flex flex-1 items-center justify-between gap-3">
                                   <span>{isActive ? item : `Add ${item}`}</span>
-                                  <span className="rounded-lg border border-ink-200/20 px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-ink-100/70">
+                                  <span className="rounded-md bg-slate-700/60 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.15em] text-slate-400">
                                     {catalogByItem.get(item) ?? 'Gear'}
                                   </span>
                                 </span>
@@ -345,10 +345,10 @@ export function WearGuideCard({
               {/* Body zones - Wear */}
               <div className="space-y-4">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-ink-100/70">
+                  <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
                     Wear by body zone
                   </p>
-                  <p className="mt-1 text-sm text-ink-100/50">Core layers to keep you dialed in.</p>
+                  <p className="mt-1 text-sm text-slate-500">Core layers to keep you dialed in.</p>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   {coverageSections.map((section) => {
@@ -382,10 +382,10 @@ export function WearGuideCard({
               {/* Optional / Pack section */}
               <div className="space-y-4">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-ink-100/70">
+                  <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
                     Optional / Pack
                   </p>
-                  <p className="mt-1 text-sm text-ink-100/50">
+                  <p className="mt-1 text-sm text-slate-500">
                     Nice-to-have extras if conditions shift.
                   </p>
                 </div>
@@ -446,7 +446,7 @@ export function WearGuideCard({
                     <Badge
                       key={reason}
                       variant="outline"
-                      className="border-ink-200/20 text-ink-100/80"
+                      className="border-slate-600/50 bg-slate-700/40 text-slate-300"
                     >
                       {reason}
                     </Badge>

@@ -28,13 +28,15 @@ function ForecastMetricCard({
   primaryClassName,
   children,
 }: ForecastMetricCardProps) {
-  const primaryClass = ['text-lg text-ink-50', primaryClassName].filter(Boolean).join(' ')
+  const primaryClass = ['text-lg text-slate-100', primaryClassName].filter(Boolean).join(' ')
 
   return (
-    <div className="rounded-2xl border border-ink-200/10 bg-ink-950/40 p-4">
-      <p className="text-xs uppercase tracking-[0.25em] text-ink-100/60">{label}</p>
+    <div className="rounded-xl border border-slate-700/50 bg-slate-800/60 p-4 shadow-sm">
+      <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">{label}</p>
       <div className="mt-2 flex items-center gap-3">
-        <Icon className="h-6 w-6 text-tide-200" aria-hidden="true" />
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-700/80 border border-slate-600/50 shadow-sm">
+          <Icon className="h-5 w-5 text-indigo-400" aria-hidden="true" />
+        </div>
         <p className={primaryClass}>{primary}</p>
       </div>
       {children}
@@ -61,14 +63,14 @@ export function ForecastSummaryMetrics({
           primary={`${Math.round(selectedHour.temperature)}F`}
           primaryClassName="font-display text-3xl"
         >
-          <p className="text-sm text-ink-100/70">
+          <p className="text-sm text-slate-400">
             Feels like {Math.round(selectedHour.feelsLike)}F
           </p>
           {heatIndex !== null && (
-            <p className="text-sm text-ink-100/70">Heat index {Math.round(heatIndex)}F</p>
+            <p className="text-sm text-slate-400">Heat index {Math.round(heatIndex)}F</p>
           )}
           {windChill !== null && (
-            <p className="text-sm text-ink-100/70">Wind chill {Math.round(windChill)}F</p>
+            <p className="text-sm text-slate-400">Wind chill {Math.round(windChill)}F</p>
           )}
         </ForecastMetricCard>
 
@@ -78,7 +80,7 @@ export function ForecastSummaryMetrics({
           primary={`${Math.round(selectedHour.windSpeed)} mph`}
           primaryClassName="font-display text-3xl"
         >
-          <p className="text-sm text-ink-100/70">Gusts {Math.round(selectedHour.windGusts)} mph</p>
+          <p className="text-sm text-slate-400">Gusts {Math.round(selectedHour.windGusts)} mph</p>
         </ForecastMetricCard>
       </div>
 
@@ -88,7 +90,7 @@ export function ForecastSummaryMetrics({
           icon={Droplets}
           primary={`${Math.round(selectedHour.humidity)}%`}
         >
-          <p className="text-sm text-ink-100/70">Dew point {Math.round(selectedHour.dewPoint)}F</p>
+          <p className="text-sm text-slate-400">Dew point {Math.round(selectedHour.dewPoint)}F</p>
         </ForecastMetricCard>
 
         <ForecastMetricCard
@@ -96,7 +98,7 @@ export function ForecastSummaryMetrics({
           icon={CloudRain}
           primary={`${Math.round(selectedHour.precipitationChance)}% chance`}
         >
-          <p className="text-sm text-ink-100/70">{selectedHour.precipitation.toFixed(2)} in/hr</p>
+          <p className="text-sm text-slate-400">{selectedHour.precipitation.toFixed(2)} in/hr</p>
         </ForecastMetricCard>
       </div>
 
@@ -106,7 +108,7 @@ export function ForecastSummaryMetrics({
           icon={CloudSun}
           primary={`${Math.round(selectedHour.cloudCover)}% cloud cover`}
         >
-          <p className="text-sm text-ink-100/70">Visibility {visibilityLabel} mi</p>
+          <p className="text-sm text-slate-400">Visibility {visibilityLabel} mi</p>
         </ForecastMetricCard>
 
         <ForecastMetricCard label="Elevation" icon={Mountain} primary={elevationLabel} />
