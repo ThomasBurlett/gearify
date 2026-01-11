@@ -1,4 +1,3 @@
-import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import type {
   ComfortProfile,
@@ -41,9 +40,9 @@ function optionClass(isSelected: boolean) {
 
 export function ComfortProfileControls({ profile, onChange }: ComfortProfileControlsProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="space-y-2">
-        <Label>Temperature comfort</Label>
+        <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Temperature</p>
         <div className="grid gap-2 sm:flex sm:flex-wrap">
           {temperatureOptions.map((option) => (
             <button
@@ -62,7 +61,7 @@ export function ComfortProfileControls({ profile, onChange }: ComfortProfileCont
       </div>
 
       <div className="space-y-2">
-        <Label>Wind tolerance</Label>
+        <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Wind</p>
         <div className="grid gap-2 sm:flex sm:flex-wrap">
           {windOptions.map((option) => (
             <button
@@ -81,7 +80,7 @@ export function ComfortProfileControls({ profile, onChange }: ComfortProfileCont
       </div>
 
       <div className="space-y-2">
-        <Label>Precipitation preference</Label>
+        <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Precipitation</p>
         <div className="grid gap-2 sm:flex sm:flex-wrap">
           {precipitationOptions.map((option) => (
             <button

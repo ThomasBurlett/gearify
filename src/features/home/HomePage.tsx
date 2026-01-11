@@ -25,6 +25,8 @@ import { QuickSetupSection } from '@/features/home/components/QuickSetupSection'
 import { WeatherDashboard } from '@/features/home/components/WeatherDashboard'
 import { TuningPanel } from '@/features/home/components/TuningPanel'
 import { ForecastSetupLocationSearch } from '@/features/home/components/ForecastSetupLocationSearch'
+import { ForecastSetupSportPicker } from '@/features/home/components/ForecastSetupSportPicker'
+import { ForecastSetupTimePicker } from '@/features/home/components/ForecastSetupTimePicker'
 import type { HomeSearchParams, SelectedHour } from '@/features/home/types'
 import { useForecastData } from '@/features/home/hooks/useForecastData'
 import { useComfortProfileStorage } from '@/features/home/hooks/useComfortProfileStorage'
@@ -110,6 +112,9 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
   } = useHomeStore()
   const [isLocating, setIsLocating] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [isLocationDialogOpen, setIsLocationDialogOpen] = useState(false)
+  const [isSportDialogOpen, setIsSportDialogOpen] = useState(false)
+  const [isTimeDialogOpen, setIsTimeDialogOpen] = useState(false)
   const [scenario, setScenario] = useState<'now' | 'colder' | 'wetter'>('now')
   const lastUrlTime = useRef<string | null | undefined>(undefined)
 
@@ -587,49 +592,106 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
                 locationName={location ? formatLocationName(location) : 'Locating...'}
                 sport={sport}
                 selectedTime={selectedTime}
-                onLocationClick={() => setIsSearchOpen(true)}
-                onSportClick={() => {}}
-                onTimeClick={() => {}}
+                onLocationClick={() => setIsLocationDialogOpen(true)}
+                onSportClick={() => setIsSportDialogOpen(true)}
+                onTimeClick={() => setIsTimeDialogOpen(true)}
               />
 
-              {/* Location Search Popover */}
-              <ForecastSetupLocationSearch
-                searchQuery={searchQuery}
-                onSearchQueryChange={handleQueryChange}
-                onSearchFocus={handleSearchFocus}
-                onSearchKeyDown={(event) => {
-                  if (event.key === 'Escape') {
-                    setIsSearchOpen(false)
-                    return
-                  }
-                  if (!searchResults.length) return
-                  if (event.key === 'ArrowDown') {
-                    event.preventDefault()
-                    setSelectedResultIndex((prev) => Math.min(prev + 1, searchResults.length - 1))
-                  }
-                  if (event.key === 'ArrowUp') {
-                    event.preventDefault()
-                    setSelectedResultIndex((prev) => Math.max(prev - 1, 0))
-                  }
-                  if (event.key === 'Enter') {
-                    event.preventDefault()
-                    handleLocationSelect(searchResults[selectedResultIndex])
-                  }
-                }}
-                searchResults={searchResults}
-                searchStatus={searchStatus}
-                searchError={searchError}
-                hasSearched={hasSearched}
-                isSearchOpen={isSearchOpen}
-                onSearchOpenChange={setIsSearchOpen}
-                onLocationSelect={handleLocationSelect}
-                selectedResultIndex={selectedResultIndex}
-                formatLocationName={formatLocationName}
-                recentLocations={recentLocations}
-                isLocating={isLocating}
-                onUseCurrentLocation={handleUseCurrentLocation}
-                geoMessage={geoMessage}
-              />
+              {/* Location Dialog */}
+              <Dialog open={isLocationDialogOpen} onOpenChange={setIsLocationDialogOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Change Location</DialogTitle>
+                    <DialogDescription>Search for a location or use your current location</DialogDescription>
+                  </DialogHeader>
+                  <ForecastSetupLocationSearch
+                    searchQuery={searchQuery}
+                    onSearchQueryChange={handleQueryChange}
+                    onSearchFocus={handleSearchFocus}
+                    onSearchKeyDown={(event) => {
+                      if (event.key === 'Escape') {
+                        setIsLocationDialogOpen(false)
+                        return
+                      }
+                      if (!searchResults.length) return
+                      if (event.key === 'ArrowDown') {
+                        event.preventDefault()
+                        setSelectedResultIndex((prev) => Math.min(prev + 1, searchResults.length - 1))
+                      }
+                      if (event.key === 'ArrowUp') {
+                        event.preventDefault()
+                        setSelectedResultIndex((prev) => Math.max(prev - 1, 0))
+                      }
+                      if (event.key === 'Enter') {
+                        event.preventDefault()
+                        handleLocationSelect(searchResults[selectedResultIndex])
+                      }
+                    }}
+                    searchResults={searchResults}
+                    searchStatus={searchStatus}
+                    searchError={searchError}
+                    hasSearched={hasSearched}
+                    isSearchOpen={true}
+                    onSearchOpenChange={() => {}}
+                    onLocationSelect={(result) => {
+                      handleLocationSelect(result)
+                      setIsLocationDialogOpen(false)
+                    }}
+                    selectedResultIndex={selectedResultIndex}
+                    formatLocationName={formatLocationName}
+                    recentLocations={recentLocations}
+                    isLocating={isLocating}
+                    onUseCurrentLocation={handleUseCurrentLocation}
+                    geoMessage={geoMessage}
+                  />
+                </DialogContent>
+              </Dialog>
+
+              {/* Sport Dialog */}
+              <Dialog open={isSportDialogOpen} onOpenChange={setIsSportDialogOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Select Activity</DialogTitle>
+                    <DialogDescription>Choose which sport you're planning for</DialogDescription>
+                  </DialogHeader>
+                  <ForecastSetupSportPicker
+                    sport={sport}
+                    onSportChange={(newSport) => {
+                      setSport(newSport)
+                      setIsSportDialogOpen(false)
+                      navigate({ to: `/${newSport}`, search })
+                    }}
+                  />
+                </DialogContent>
+              </Dialog>
+
+              {/* Time Dialog */}
+              <Dialog open={isTimeDialogOpen} onOpenChange={setIsTimeDialogOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Select Time</DialogTitle>
+                    <DialogDescription>Choose when you'll be doing this activity</DialogDescription>
+                  </DialogHeader>
+                  <ForecastSetupTimePicker
+                    selectedTime={selectedTime}
+                    onTimeChange={(newTime) => {
+                      setSelectedTime(newTime)
+                      setIsTimeDialogOpen(false)
+                    }}
+                    onPreset={(hour) => {
+                      const date = new Date(selectedTime)
+                      date.setHours(hour, 0, 0, 0)
+                      setSelectedTime(date.toISOString().slice(0, 16))
+                      setIsTimeDialogOpen(false)
+                    }}
+                    presetHours={[
+                      { label: 'Now', hour: new Date().getHours() },
+                      { label: 'Sunrise', hour: 6 },
+                      { label: 'Peak', hour: 14 },
+                    ]}
+                  />
+                </DialogContent>
+              </Dialog>
 
               {/* Weather Dashboard */}
               <WeatherDashboard

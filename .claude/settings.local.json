@@ -14,7 +14,11 @@
       "Bash(pnpm add:*)",
       "Bash(npx playwright install:*)",
       "Bash(node:*)",
-      "Skill(frontend-design:frontend-design)"
+      "Skill(frontend-design:frontend-design)",
+      "Bash(curl:*)",
+      "Bash(echo:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm lint:fix:*)"
     ]
   }
 }
