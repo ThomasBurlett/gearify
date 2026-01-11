@@ -51,7 +51,9 @@ export function BodyZoneCard({
         >
           <Icon className={cn(iconInnerSize, accent)} />
         </div>
-        <p className={cn('font-medium uppercase tracking-[0.15em]', labelSize, labelOpacity)}>{label}</p>
+        <p className={cn('font-medium uppercase tracking-[0.15em]', labelSize, labelOpacity)}>
+          {label}
+        </p>
       </div>
       <div className={cn('flex flex-wrap gap-2', optional ? 'mt-2' : 'mt-3')}>
         {items.map((item) => {

@@ -32,7 +32,10 @@ export function QuickSetupSection({
   })
 
   const sportLabel = sport === 'skiing' ? '⛷️ Skiing' : '🏃 Running'
-  const sportColor = sport === 'skiing' ? 'from-pink-500/20 to-pink-600/20 border-pink-500/40 hover:border-pink-500/60' : 'from-indigo-500/20 to-indigo-600/20 border-indigo-500/40 hover:border-indigo-500/60'
+  const sportColor =
+    sport === 'skiing'
+      ? 'from-pink-500/20 to-pink-600/20 border-pink-500/40 hover:border-pink-500/60'
+      : 'from-indigo-500/20 to-indigo-600/20 border-indigo-500/40 hover:border-indigo-500/60'
   const sportIconColor = sport === 'skiing' ? 'text-pink-400' : 'text-indigo-400'
 
   return (
@@ -64,7 +67,9 @@ export function QuickSetupSection({
         onClick={onSportClick}
         className={`group relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 transition-all duration-200 hover:shadow-lg ${sportColor}`}
       >
-        <div className={`absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100 bg-gradient-to-br ${sport === 'skiing' ? 'from-pink-500/5 to-transparent' : 'from-indigo-500/5 to-transparent'}`} />
+        <div
+          className={`absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100 bg-gradient-to-br ${sport === 'skiing' ? 'from-pink-500/5 to-transparent' : 'from-indigo-500/5 to-transparent'}`}
+        />
         <div className="relative z-10 space-y-2">
           <div className="flex items-center gap-2">
             <span className={`text-xl ${sportIconColor}`}>{sport === 'skiing' ? '⛷️' : '🏃'}</span>
@@ -98,7 +103,9 @@ export function QuickSetupSection({
             <p className="text-base font-semibold text-slate-100 group-hover:text-white">
               {timeDisplay}
             </p>
-            <p className="text-sm font-medium text-slate-400 group-hover:text-slate-300">{timeTime}</p>
+            <p className="text-sm font-medium text-slate-400 group-hover:text-slate-300">
+              {timeTime}
+            </p>
           </div>
         </div>
       </button>

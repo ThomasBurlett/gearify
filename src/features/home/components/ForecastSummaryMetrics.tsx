@@ -63,9 +63,7 @@ export function ForecastSummaryMetrics({
           primary={`${Math.round(selectedHour.temperature)}F`}
           primaryClassName="font-display text-3xl"
         >
-          <p className="text-sm text-slate-400">
-            Feels like {Math.round(selectedHour.feelsLike)}F
-          </p>
+          <p className="text-sm text-slate-400">Feels like {Math.round(selectedHour.feelsLike)}F</p>
           {heatIndex !== null && (
             <p className="text-sm text-slate-400">Heat index {Math.round(heatIndex)}F</p>
           )}

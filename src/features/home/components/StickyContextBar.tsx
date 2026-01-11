@@ -76,19 +76,10 @@ export function StickyContextBar({
 
         {/* Right: Action buttons */}
         <div className="flex items-center gap-2 shrink-0">
-          <Button
-            onClick={onSaveClick}
-            size="sm"
-            className="hidden sm:inline-flex"
-          >
+          <Button onClick={onSaveClick} size="sm" className="hidden sm:inline-flex">
             Save Plan
           </Button>
-          <Button
-            onClick={onSaveClick}
-            size="icon"
-            className="sm:hidden"
-            title="Save plan"
-          >
+          <Button onClick={onSaveClick} size="icon" className="sm:hidden" title="Save plan">
             <Wind className="h-4 w-4" />
           </Button>
         </div>

@@ -18,7 +18,9 @@
       "Bash(curl:*)",
       "Bash(echo:*)",
       "Bash(pnpm install:*)",
-      "Bash(pnpm lint:fix:*)"
+      "Bash(pnpm lint:fix:*)",
+      "Bash(pnpm type-check:*)",
+      "Bash(find:*)"
     ]
   }
 }

@@ -15,7 +15,8 @@ const badgeVariants = cva(
           'bg-destructive/10 [a]:hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 text-destructive dark:bg-destructive/20',
         glow: 'border-indigo-400/50 bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-[0_2px_12px_rgba(99,102,241,0.4)] font-semibold',
         warm: 'border-pink-400/50 bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-[0_2px_12px_rgba(244,114,182,0.35)]',
-        outline: 'border-slate-600/50 text-slate-300 [a]:hover:bg-slate-700/50 [a]:hover:text-slate-200',
+        outline:
+          'border-slate-600/50 text-slate-300 [a]:hover:bg-slate-700/50 [a]:hover:text-slate-200',
         ghost: 'hover:bg-slate-700/50 hover:text-slate-200',
         link: 'text-indigo-400 underline-offset-4 hover:underline',
       },

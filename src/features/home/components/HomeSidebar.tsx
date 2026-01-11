@@ -169,7 +169,11 @@ export function HomeSidebar({ onShare }: HomeSidebarProps) {
                       <DialogHeader className="relative z-10 gap-4">
                         <div className="flex flex-wrap items-center gap-4">
                           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/30">
-                            <img src="/gearcast-logo.svg" alt="GearCast logo" className="h-7 w-7 brightness-0 invert" />
+                            <img
+                              src="/gearcast-logo.svg"
+                              alt="GearCast logo"
+                              className="h-7 w-7 brightness-0 invert"
+                            />
                           </div>
                           <div>
                             <p className="text-xs font-medium uppercase tracking-[0.3em] text-slate-400">

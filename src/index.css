@@ -30,8 +30,7 @@ body {
     radial-gradient(ellipse at 50% 100%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
     /* Topographic contour lines */
     url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5c13.807 0 25 11.193 25 25S43.807 55 30 55 5 43.807 5 30 16.193 5 30 5zm0 4c11.598 0 21 9.402 21 21s-9.402 21-21 21S9 41.598 9 30 18.402 9 30 9zm0 4c9.389 0 17 7.611 17 17s-7.611 17-17 17-17-7.611-17-17 7.611-17 17-17zm0 4c7.18 0 13 5.82 13 13s-5.82 13-13 13-13-5.82-13-13 5.82-13 13-13zm0 4a9 9 0 100 18 9 9 0 000-18zm0 4a5 5 0 100 10 5 5 0 000-10z' fill='none' stroke='%234f5d7a' stroke-width='0.5' stroke-opacity='0.3'/%3E%3C/svg%3E"),
-    /* Base gradient */
-    linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #1a1f2e 100%);
+    /* Base gradient */ linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #1a1f2e 100%);
   background-attachment: fixed;
 }
 

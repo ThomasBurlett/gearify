@@ -135,7 +135,6 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
     searchQuery,
     searchResults,
     selectedResultIndex,
-    isSearchOpen,
     searchStatus,
     searchError,
     hasSearched,
@@ -602,7 +601,9 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Change Location</DialogTitle>
-                    <DialogDescription>Search for a location or use your current location</DialogDescription>
+                    <DialogDescription>
+                      Search for a location or use your current location
+                    </DialogDescription>
                   </DialogHeader>
                   <ForecastSetupLocationSearch
                     searchQuery={searchQuery}
@@ -616,7 +617,9 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
                       if (!searchResults.length) return
                       if (event.key === 'ArrowDown') {
                         event.preventDefault()
-                        setSelectedResultIndex((prev) => Math.min(prev + 1, searchResults.length - 1))
+                        setSelectedResultIndex((prev) =>
+                          Math.min(prev + 1, searchResults.length - 1)
+                        )
                       }
                       if (event.key === 'ArrowUp') {
                         event.preventDefault()

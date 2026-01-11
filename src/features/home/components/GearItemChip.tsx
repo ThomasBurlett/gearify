@@ -44,7 +44,10 @@ export function GearItemChip({
         <span className="flex flex-1 flex-wrap items-center gap-1.5">
           <span className="font-medium">{item}</span>
           {mappedGear && (
-            <Badge variant="outline" className="text-[10px] border-indigo-500/50 bg-indigo-900/40 text-indigo-300">
+            <Badge
+              variant="outline"
+              className="text-[10px] border-indigo-500/50 bg-indigo-900/40 text-indigo-300"
+            >
               → {mappedGear.name}
             </Badge>
           )}

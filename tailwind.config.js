@@ -157,14 +157,14 @@ export default {
       },
       boxShadow: {
         glow: '0 30px 80px -50px rgba(59, 130, 246, 0.35)',
-        'card': '0 1px 3px rgba(42, 37, 32, 0.04), 0 4px 12px rgba(42, 37, 32, 0.06)',
+        card: '0 1px 3px rgba(42, 37, 32, 0.04), 0 4px 12px rgba(42, 37, 32, 0.06)',
         'card-hover': '0 2px 8px rgba(42, 37, 32, 0.06), 0 8px 24px rgba(42, 37, 32, 0.1)',
-        'elevation': '0 4px 20px rgba(42, 37, 32, 0.08), 0 1px 3px rgba(42, 37, 32, 0.04)',
+        elevation: '0 4px 20px rgba(42, 37, 32, 0.08), 0 1px 3px rgba(42, 37, 32, 0.04)',
         'inner-glow': 'inset 0 1px 0 rgba(255, 255, 255, 0.8)',
       },
       backgroundImage: {
         'topo-pattern': `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5c13.807 0 25 11.193 25 25S43.807 55 30 55 5 43.807 5 30 16.193 5 30 5zm0 5c11.046 0 20 8.954 20 20s-8.954 20-20 20S10 41.046 10 30 18.954 10 30 10zm0 5c8.284 0 15 6.716 15 15s-6.716 15-15 15-15-6.716-15-15 6.716-15 15-15zm0 5c5.523 0 10 4.477 10 10s-4.477 10-10 10-10-4.477-10-10 4.477-10 10-10zm0 5a5 5 0 100 10 5 5 0 000-10z' fill='%23C4BAA5' fill-opacity='0.12' fill-rule='evenodd'/%3E%3C/svg%3E")`,
-        'grain': `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E")`,
+        grain: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E")`,
       },
     },
   },

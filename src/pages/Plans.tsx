@@ -44,25 +44,46 @@ export default function PlansPage() {
         <HomeSidebar onShare={handleShare} />
         <SidebarInset className="bg-transparent">
           <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-col gap-8 px-6 pb-24 pt-8">
-            <header className="flex flex-wrap items-center justify-between gap-6 rounded-2xl border border-slate-700/50 bg-gradient-to-br from-slate-800/90 via-slate-800/80 to-slate-900/90 px-6 py-5 shadow-xl shadow-black/20 backdrop-blur-sm">
-              <div>
-                <p className="font-display text-2xl font-semibold tracking-tight text-slate-100">
-                  Saved plans
-                </p>
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
-                  Keep your favorites
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" className="rounded-lg" render={<Link to="/" />}>
-                  <ArrowLeft />
-                  Back to forecast
-                </Button>
-                <SidebarTrigger
-                  className="md:hidden rounded-full border border-indigo-500/40 bg-indigo-500/15 text-indigo-200 shadow-lg shadow-indigo-500/20 hover:bg-indigo-500/25 hover:text-white"
-                  variant="outline"
-                  label="Plans & Gear"
-                />
+            <header className="relative overflow-hidden rounded-3xl border border-slate-700/40 bg-gradient-to-br from-slate-800/80 via-slate-800/60 to-slate-900/80 px-8 py-7 shadow-2xl shadow-black/30 backdrop-blur-md">
+              {/* Decorative accent */}
+              <div
+                className="absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none"
+                style={{
+                  background:
+                    'radial-gradient(circle at top right, rgba(99,102,241,0.1), transparent 70%)',
+                }}
+              />
+
+              <div className="relative z-10 flex flex-wrap items-center justify-between gap-6">
+                <div className="flex-1">
+                  <div className="flex items-baseline gap-3 mb-2">
+                    <h1 className="font-display text-3xl font-bold tracking-tight text-white">
+                      Saved Plans
+                    </h1>
+                    <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-300/60">
+                      Library
+                    </span>
+                  </div>
+                  <p className="text-sm text-slate-400 font-medium">
+                    Browse and manage your gear combinations
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-lg border-slate-600/50 hover:border-slate-500 hover:bg-slate-700/50"
+                    render={<Link to="/" />}
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to forecast
+                  </Button>
+                  <SidebarTrigger
+                    className="md:hidden rounded-full border border-indigo-500/40 bg-indigo-500/15 text-indigo-200 shadow-lg shadow-indigo-500/20 hover:bg-indigo-500/25 hover:text-white"
+                    variant="outline"
+                    label="Plans & Gear"
+                  />
+                </div>
               </div>
             </header>
 
