@@ -564,9 +564,6 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
             sport={sport}
             selectedTime={selectedTime}
             onLocationClick={() => setIsSearchOpen(true)}
-            onSportClick={() => {}}
-            onTimeClick={() => {}}
-            onSaveClick={() => {}}
           />
 
           <div className="relative z-10 mx-auto flex w-full max-w-[1400px] flex-col gap-8 px-6 pb-24 pt-8">

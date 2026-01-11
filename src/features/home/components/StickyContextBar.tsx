@@ -1,5 +1,4 @@
-import { MapPin, Wind, Calendar } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { MapPin, Calendar } from 'lucide-react'
 import type { SportType } from '@/lib/weather'
 
 type StickyContextBarProps = {
@@ -9,7 +8,6 @@ type StickyContextBarProps = {
   onLocationClick?: () => void
   onSportClick?: () => void
   onTimeClick?: () => void
-  onSaveClick?: () => void
 }
 
 export function StickyContextBar({
@@ -19,7 +17,6 @@ export function StickyContextBar({
   onLocationClick,
   onSportClick,
   onTimeClick,
-  onSaveClick,
 }: StickyContextBarProps) {
   // Format time for display
   const timeDate = new Date(selectedTime)
@@ -74,15 +71,6 @@ export function StickyContextBar({
           </button>
         </div>
 
-        {/* Right: Action buttons */}
-        <div className="flex items-center gap-2 shrink-0">
-          <Button onClick={onSaveClick} size="sm" className="hidden sm:inline-flex">
-            Save Plan
-          </Button>
-          <Button onClick={onSaveClick} size="icon" className="sm:hidden" title="Save plan">
-            <Wind className="h-4 w-4" />
-          </Button>
-        </div>
       </div>
     </div>
   )
