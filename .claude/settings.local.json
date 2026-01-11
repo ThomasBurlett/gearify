@@ -13,7 +13,8 @@
       "Skill(frontend-design)",
       "Bash(pnpm add:*)",
       "Bash(npx playwright install:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Skill(frontend-design:frontend-design)"
     ]
   }
 }

@@ -346,11 +346,11 @@ export function WearGuideCard({
               <div className="space-y-4">
                 <div>
                   <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
-                    Wear by body zone
+                    What to wear
                   </p>
-                  <p className="mt-1 text-sm text-slate-500">Core layers to keep you dialed in.</p>
+                  <p className="mt-1 text-sm text-slate-500">Core layers by body zone.</p>
                 </div>
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                   {coverageSections.map((section) => {
                     const items = wearPlan.coverage[section.key].filter(
                       (item) => !removedWearItems.includes(item)
@@ -414,7 +414,7 @@ export function WearGuideCard({
                 )}
 
                 {/* Optional by body zone */}
-                <div className="grid gap-3 md:grid-cols-2">
+                <div className="grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                   {coverageSections.map((section) => {
                     const optionalItems = (wearPlan.optionalCoverage[section.key] ?? []).filter(
                       (item) => !removedWearItems.includes(item)

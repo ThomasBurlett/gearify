@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 
 import { WEAR_ITEM_CATALOG, getGearSuggestions, getWearPlan } from '@/lib/gear'
-import { toLocalHourInput, setHourForDate } from '@/lib/time'
+import { toLocalHourInput } from '@/lib/time'
 import { debounce } from '@/lib/utils'
 import { getCurrentPositionWithFallback, getGeolocationDetails } from '@/lib/geolocation'
 import {
@@ -16,11 +16,15 @@ import {
   type LocationResult,
   type SportType,
 } from '@/lib/weather'
-import { ForecastCard } from '@/features/home/components/ForecastCard'
 import { HomeHeader } from '@/features/home/components/HomeHeader'
 import { HomeSidebar } from '@/features/home/components/HomeSidebar'
 import { PackListCard } from '@/features/home/components/PackListCard'
 import { WearGuideCard } from '@/features/home/components/WearGuideCard'
+import { StickyContextBar } from '@/features/home/components/StickyContextBar'
+import { QuickSetupSection } from '@/features/home/components/QuickSetupSection'
+import { WeatherDashboard } from '@/features/home/components/WeatherDashboard'
+import { TuningPanel } from '@/features/home/components/TuningPanel'
+import { ForecastSetupLocationSearch } from '@/features/home/components/ForecastSetupLocationSearch'
 import type { HomeSearchParams, SelectedHour } from '@/features/home/types'
 import { useForecastData } from '@/features/home/hooks/useForecastData'
 import { useComfortProfileStorage } from '@/features/home/hooks/useComfortProfileStorage'
@@ -47,12 +51,6 @@ const DEFAULT_LOCATION: LocationResult = {
   latitude: 40.56498,
   longitude: -111.83897,
 }
-
-const PRESET_HOURS = [
-  { label: 'Morning', hour: 8 },
-  { label: 'Afternoon', hour: 14 },
-  { label: 'Evening', hour: 19 },
-]
 
 function parseSport(value?: string): SportType {
   return value === 'skiing' ? 'skiing' : 'running'
@@ -81,7 +79,6 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
     setForecast,
     status,
     setStatus,
-    errorMessage,
     setErrorMessage,
     geoMessage,
     setGeoMessage,
@@ -557,7 +554,18 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
       <SidebarProvider defaultOpen>
         <HomeSidebar onShare={handleShare} />
         <SidebarInset className="bg-transparent">
-          <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-col gap-8 px-6 pb-24 pt-8">
+          {/* Sticky Context Bar */}
+          <StickyContextBar
+            locationName={location ? formatLocationName(location) : 'Locating...'}
+            sport={sport}
+            selectedTime={selectedTime}
+            onLocationClick={() => setIsSearchOpen(true)}
+            onSportClick={() => {}}
+            onTimeClick={() => {}}
+            onSaveClick={() => {}}
+          />
+
+          <div className="relative z-10 mx-auto flex w-full max-w-[1400px] flex-col gap-8 px-6 pb-24 pt-8">
             <HomeHeader
               canSavePlan={canSavePlan}
               onSavePlan={handleSavePlan}
@@ -573,77 +581,83 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
               isFavorite={isFavorite}
             />
 
-            <main className="flex w-full flex-col gap-10">
-              <section>
-                <ForecastCard
-                  searchQuery={searchQuery}
-                  onSearchQueryChange={handleQueryChange}
-                  onSearchFocus={handleSearchFocus}
-                  onSearchKeyDown={(event) => {
-                    if (event.key === 'Escape') {
-                      setIsSearchOpen(false)
-                      return
-                    }
-                    if (!searchResults.length) return
-                    if (event.key === 'ArrowDown') {
-                      event.preventDefault()
-                      setSelectedResultIndex((prev) => Math.min(prev + 1, searchResults.length - 1))
-                    }
-                    if (event.key === 'ArrowUp') {
-                      event.preventDefault()
-                      setSelectedResultIndex((prev) => Math.max(prev - 1, 0))
-                    }
-                    if (event.key === 'Enter') {
-                      event.preventDefault()
-                      handleLocationSelect(searchResults[selectedResultIndex])
-                    }
-                  }}
-                  searchResults={searchResults}
-                  searchStatus={searchStatus}
-                  searchError={searchError}
-                  hasSearched={hasSearched}
-                  isSearchOpen={isSearchOpen}
-                  onSearchOpenChange={setIsSearchOpen}
-                  onLocationSelect={handleLocationSelect}
-                  selectedResultIndex={selectedResultIndex}
-                  formatLocationName={formatLocationName}
-                  recentLocations={recentLocations}
-                  isLocating={isLocating}
-                  onUseCurrentLocation={handleUseCurrentLocation}
-                  geoMessage={geoMessage}
-                  sport={sport}
-                  onSportChange={setSport}
-                  selectedTime={selectedTime}
-                  onTimeChange={setSelectedTime}
-                  onPreset={(hour) =>
-                    setSelectedTime(toLocalHourInput(setHourForDate(new Date(selectedTime), hour)))
-                  }
-                  presetHours={PRESET_HOURS}
-                  status={status}
-                  locationName={location ? formatLocationName(location) : 'Locating you...'}
-                  conditionLabel={conditionLabel}
-                  timezone={forecast?.timezone}
-                  selectedHour={selectedHour}
-                  heatIndex={heatIndex}
-                  windChill={windChill}
-                  visibilityMiles={visibilityMiles}
-                  elevation={location?.elevation ?? null}
-                  errorMessage={errorMessage}
-                  scenario={scenario}
-                  onScenarioChange={setScenario}
-                  comfortProfile={comfortProfile}
-                  onComfortProfileChange={setComfortProfile}
-                  exertion={exertion}
-                  onExertionChange={setExertion}
-                  duration={duration}
-                  onDurationChange={setDuration}
-                  colderAvailable={!!colderWearPlan}
-                  wetterAvailable={!!wetterWearPlan}
-                  onResetAddedItems={resetAddedItems}
-                />
-              </section>
+            <main className="flex w-full flex-col gap-8">
+              {/* Quick Setup Section */}
+              <QuickSetupSection
+                locationName={location ? formatLocationName(location) : 'Locating...'}
+                sport={sport}
+                selectedTime={selectedTime}
+                onLocationClick={() => setIsSearchOpen(true)}
+                onSportClick={() => {}}
+                onTimeClick={() => {}}
+              />
 
-              <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+              {/* Location Search Popover */}
+              <ForecastSetupLocationSearch
+                searchQuery={searchQuery}
+                onSearchQueryChange={handleQueryChange}
+                onSearchFocus={handleSearchFocus}
+                onSearchKeyDown={(event) => {
+                  if (event.key === 'Escape') {
+                    setIsSearchOpen(false)
+                    return
+                  }
+                  if (!searchResults.length) return
+                  if (event.key === 'ArrowDown') {
+                    event.preventDefault()
+                    setSelectedResultIndex((prev) => Math.min(prev + 1, searchResults.length - 1))
+                  }
+                  if (event.key === 'ArrowUp') {
+                    event.preventDefault()
+                    setSelectedResultIndex((prev) => Math.max(prev - 1, 0))
+                  }
+                  if (event.key === 'Enter') {
+                    event.preventDefault()
+                    handleLocationSelect(searchResults[selectedResultIndex])
+                  }
+                }}
+                searchResults={searchResults}
+                searchStatus={searchStatus}
+                searchError={searchError}
+                hasSearched={hasSearched}
+                isSearchOpen={isSearchOpen}
+                onSearchOpenChange={setIsSearchOpen}
+                onLocationSelect={handleLocationSelect}
+                selectedResultIndex={selectedResultIndex}
+                formatLocationName={formatLocationName}
+                recentLocations={recentLocations}
+                isLocating={isLocating}
+                onUseCurrentLocation={handleUseCurrentLocation}
+                geoMessage={geoMessage}
+              />
+
+              {/* Weather Dashboard */}
+              <WeatherDashboard
+                selectedHour={selectedHour}
+                heatIndex={heatIndex}
+                windChill={windChill}
+                visibilityMiles={visibilityMiles}
+                elevation={location?.elevation ?? null}
+                isLoading={status === 'loading'}
+              />
+
+              {/* Tuning Panel */}
+              <TuningPanel
+                scenario={scenario}
+                onScenarioChange={setScenario}
+                comfortProfile={comfortProfile}
+                onComfortProfileChange={setComfortProfile}
+                exertion={exertion}
+                onExertionChange={setExertion}
+                duration={duration}
+                onDurationChange={setDuration}
+                colderAvailable={!!colderWearPlan}
+                wetterAvailable={!!wetterWearPlan}
+                onResetAddedItems={resetAddedItems}
+              />
+
+              {/* Gear Recommendations */}
+              <section className="grid gap-6 lg:gap-8 xl:grid-cols-[1fr_auto]">
                 <WearGuideCard
                   status={status}
                   wearPlan={activePlan}
@@ -654,16 +668,18 @@ export default function HomePage({ sportParam, search = {} }: HomePageProps) {
                   addedWearItems={addedWearItems}
                   onAddedWearItemsChange={setAddedWearItems}
                 />
-                <PackListCard
-                  status={status}
-                  gear={gear}
-                  checkedItems={checkedPackItems}
-                  onCheckedItemsChange={setCheckedPackItems}
-                  customItems={customPackItems}
-                  onCustomItemsChange={setCustomPackItems}
-                  removedItems={removedPackItems}
-                  onRemovedItemsChange={setRemovedPackItems}
-                />
+                <div className="xl:w-80">
+                  <PackListCard
+                    status={status}
+                    gear={gear}
+                    checkedItems={checkedPackItems}
+                    onCheckedItemsChange={setCheckedPackItems}
+                    customItems={customPackItems}
+                    onCustomItemsChange={setCustomPackItems}
+                    removedItems={removedPackItems}
+                    onRemovedItemsChange={setRemovedPackItems}
+                  />
+                </div>
               </section>
             </main>
           </div>
